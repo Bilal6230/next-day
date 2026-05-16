@@ -4,20 +4,13 @@ import {
   doc,
   getDoc,
   onSnapshot,
-  orderBy,
-  query,
   serverTimestamp,
   setDoc,
   Unsubscribe,
   updateDoc,
-  where,
 } from 'firebase/firestore';
 
-import {
-  dueDateToFields,
-  getTodayDateKey,
-  MIN_DUE_DATE_KEY,
-} from '@/features/tasks/utils/dates';
+import { dueDateToFields, getTodayDateKey } from '@/features/tasks/utils/dates';
 import {
   validateCreateTaskInput,
   validateUpdateTaskInput,
@@ -63,60 +56,59 @@ function mapTaskDoc(id: string, data: Record<string, unknown>): Task {
   };
 }
 
-function buildTaskQuery(uid: string, filter: TaskListFilter) {
-  const col = tasksCollectionRef(uid);
-  const todayKey = getTodayDateKey();
-
-  switch (filter) {
-    case 'today':
-      return query(
-        col,
-        where('status', '==', 'pending'),
-        where('dueDateKey', '>=', MIN_DUE_DATE_KEY),
-        where('dueDateKey', '<=', todayKey),
-        orderBy('dueDateKey', 'asc'),
-        orderBy('createdAt', 'desc'),
-      );
-    case 'completed':
-      return query(
-        col,
-        where('status', '==', 'completed'),
-        orderBy('updatedAt', 'desc'),
-      );
-    case 'archived':
-      return query(
-        col,
-        where('status', '==', 'archived'),
-        orderBy('updatedAt', 'desc'),
-      );
-    case 'all':
-    default:
-      return query(
-        col,
-        where('status', 'in', ['pending', 'completed']),
-        orderBy('updatedAt', 'desc'),
-      );
-  }
-}
-
-function buildTasksDueTodayQuery(uid: string) {
-  const todayKey = getTodayDateKey();
-  return query(
-    tasksCollectionRef(uid),
-    where('status', '==', 'pending'),
-    where('dueDateKey', '>=', MIN_DUE_DATE_KEY),
-    where('dueDateKey', '<=', todayKey),
-    orderBy('dueDateKey', 'asc'),
-    orderBy('createdAt', 'desc'),
-  );
-}
-
 function mapSnapshotToTasks(
   snapshot: import('firebase/firestore').QuerySnapshot,
 ): Task[] {
   return snapshot.docs.map((docSnap) =>
     mapTaskDoc(docSnap.id, docSnap.data() as Record<string, unknown>),
   );
+}
+
+function timestampMillis(value: Task['updatedAt']): number {
+  return value?.toMillis?.() ?? 0;
+}
+
+function filterTasks(tasks: Task[], filter: TaskListFilter): Task[] {
+  const todayKey = getTodayDateKey();
+
+  switch (filter) {
+    case 'today':
+      return tasks.filter(
+        (task) =>
+          task.status === 'pending' &&
+          task.dueDateKey != null &&
+          task.dueDateKey <= todayKey,
+      );
+    case 'completed':
+      return tasks.filter((task) => task.status === 'completed');
+    case 'archived':
+      return tasks.filter((task) => task.status === 'archived');
+    case 'all':
+    default:
+      return tasks.filter(
+        (task) => task.status === 'pending' || task.status === 'completed',
+      );
+  }
+}
+
+function sortTasks(tasks: Task[], filter: TaskListFilter): Task[] {
+  const sorted = [...tasks];
+
+  if (filter === 'today') {
+    return sorted.sort((a, b) => {
+      const keyCompare = (a.dueDateKey ?? '').localeCompare(b.dueDateKey ?? '');
+      if (keyCompare !== 0) return keyCompare;
+      return timestampMillis(b.createdAt) - timestampMillis(a.createdAt);
+    });
+  }
+
+  return sorted.sort(
+    (a, b) => timestampMillis(b.updatedAt) - timestampMillis(a.updatedAt),
+  );
+}
+
+function processTasks(tasks: Task[], filter: TaskListFilter): Task[] {
+  return sortTasks(filterTasks(tasks, filter), filter);
 }
 
 export async function getTask(
@@ -243,22 +235,10 @@ export function subscribeToTasks(
   onData: (tasks: Task[]) => void,
   onError: (error: Error) => void,
 ): Unsubscribe {
-  const q = buildTaskQuery(uid, filter);
-
   return onSnapshot(
-    q,
+    tasksCollectionRef(uid),
     (snapshot) => {
-      let tasks = mapSnapshotToTasks(snapshot);
-      if (filter === 'today') {
-        const todayKey = getTodayDateKey();
-        tasks = tasks.filter(
-          (task) =>
-            task.status === 'pending' &&
-            task.dueDateKey != null &&
-            task.dueDateKey <= todayKey,
-        );
-      }
-      onData(tasks);
+      onData(processTasks(mapSnapshotToTasks(snapshot), filter));
     },
     (error) => onError(error),
   );
@@ -269,19 +249,10 @@ export function subscribeToTasksDueToday(
   onData: (tasks: Task[]) => void,
   onError: (error: Error) => void,
 ): Unsubscribe {
-  const q = buildTasksDueTodayQuery(uid);
-  const todayKey = getTodayDateKey();
-
   return onSnapshot(
-    q,
+    tasksCollectionRef(uid),
     (snapshot) => {
-      const tasks = mapSnapshotToTasks(snapshot).filter(
-        (task) =>
-          task.status === 'pending' &&
-          task.dueDateKey != null &&
-          task.dueDateKey <= todayKey,
-      );
-      onData(tasks);
+      onData(processTasks(mapSnapshotToTasks(snapshot), 'today'));
     },
     (error) => onError(error),
   );

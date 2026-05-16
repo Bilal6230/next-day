@@ -1,5 +1,6 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { StyleSheet, Text } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { MainTabParamList } from '@/app/navigation/types';
 import { PlaceholderTabScreen } from '@/app/screens/PlaceholderTabScreen';
@@ -10,6 +11,8 @@ import { colors, typography } from '@/shared/theme';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
+const TAB_BAR_BASE_HEIGHT = 64;
+
 function TabLabel({ label, focused }: { label: string; focused: boolean }) {
   return (
     <Text style={[styles.tabLabel, focused && styles.tabLabelFocused]}>
@@ -19,14 +22,24 @@ function TabLabel({ label, focused }: { label: string; focused: boolean }) {
 }
 
 export function MainTabNavigator() {
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, 8);
+
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
-        tabBarStyle: styles.tabBar,
         tabBarActiveTintColor: colors.tabActive,
         tabBarInactiveTintColor: colors.tabInactive,
         tabBarShowLabel: true,
+        tabBarHideOnKeyboard: true,
+        tabBarStyle: [
+          styles.tabBar,
+          {
+            height: TAB_BAR_BASE_HEIGHT + insets.bottom,
+            paddingBottom: bottomInset,
+          },
+        ],
       }}
     >
       <Tab.Screen
@@ -84,7 +97,6 @@ const styles = StyleSheet.create({
     borderTopColor: colors.border,
     borderTopWidth: 1,
     paddingTop: 4,
-    height: 60,
   },
   tabLabel: {
     ...typography.caption,

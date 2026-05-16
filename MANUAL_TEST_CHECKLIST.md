@@ -26,6 +26,7 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] Bottom tabs visible when signed in: Today, Tasks, Money, Growth, More
 - [ ] Money and Growth placeholder tabs show title and subtitle
 - [ ] Tasks tab opens task list (not placeholder)
+- [ ] **Android:** Bottom tabs visible above system navigation (Today, Tasks, Money, Growth, More labels readable)
 
 ## Today dashboard
 
@@ -35,7 +36,8 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] Overdue pending tasks appear with **Overdue** label
 - [ ] Tasks due tomorrow do not appear on Today card
 - [ ] Completed/archived tasks do not appear on Today card
-- [ ] At most 3 tasks shown; **View all** opens Tasks tab with Today filter
+- [ ] At most 3 tasks shown; **View all** / **Add task** open Tasks tab (Today filter or new task form)
+- [ ] Empty/error states on Tasks Due Today card show **Add task** and/or **Open Tasks**
 - [ ] Other placeholder cards still show empty states
 - [ ] Scroll works on smaller screens
 
@@ -56,18 +58,11 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] Friendly Firestore errors (no raw `FirebaseError:` text)
 - [ ] `npm run typecheck` passes
 
-### Firestore composite indexes (Tasks)
+### Tasks data (MVP)
 
-Create in Firebase Console when the app logs an index URL (collection: `users/{userId}/tasks`):
+- [ ] Tasks load without requiring Firestore composite indexes (client-side filter/sort on `users/{uid}/tasks`)
 
-| Use | Fields |
-|-----|--------|
-| **Today** / **Tasks Due Today** | `status` Asc, `dueDateKey` Asc, `createdAt` Desc |
-| **All** | `status` Asc, `updatedAt` Desc |
-| **Completed** | `status` Asc, `updatedAt` Desc |
-| **Archived** | `status` Asc, `updatedAt` Desc |
-
-Today queries use `dueDateKey >= '0000-00-00'` and `dueDateKey <= today` so undated tasks are excluded server-side.
+**Follow-up (not required for MVP):** Future optimization may add Firestore composite indexes when task volume grows.
 
 ## Security (Firebase Console)
 

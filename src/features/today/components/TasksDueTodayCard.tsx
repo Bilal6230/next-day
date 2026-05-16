@@ -23,10 +23,17 @@ export function TasksDueTodayCard() {
   const { tasks, isLoading, error, retry } = useTasksDueToday();
   const preview = tasks.slice(0, MAX_TASKS);
 
-  const handleViewAll = () => {
+  const openTasksToday = () => {
     navigation.navigate('Tasks', {
       screen: 'TasksList',
       params: { filter: 'today' },
+    });
+  };
+
+  const openAddTask = () => {
+    navigation.navigate('Tasks', {
+      screen: 'TaskForm',
+      params: {},
     });
   };
 
@@ -45,15 +52,30 @@ export function TasksDueTodayCard() {
       ) : error ? (
         <View style={styles.errorBlock}>
           <ErrorMessage message={error} />
-          <Pressable onPress={retry} hitSlop={8}>
-            <Text style={styles.retry}>Retry</Text>
-          </Pressable>
+          <View style={styles.actions}>
+            <Pressable onPress={retry} hitSlop={8}>
+              <Text style={styles.actionText}>Retry</Text>
+            </Pressable>
+            <Pressable onPress={openTasksToday} hitSlop={8}>
+              <Text style={styles.actionText}>Open Tasks</Text>
+            </Pressable>
+          </View>
         </View>
       ) : preview.length === 0 ? (
-        <EmptyState
-          title="No tasks due today"
-          description="You are clear for now."
-        />
+        <View style={styles.emptyBlock}>
+          <EmptyState
+            title="No tasks due today"
+            description="You are clear for now."
+          />
+          <View style={styles.actions}>
+            <Pressable onPress={openAddTask} hitSlop={8}>
+              <Text style={styles.actionText}>Add task</Text>
+            </Pressable>
+            <Pressable onPress={openTasksToday} hitSlop={8}>
+              <Text style={styles.actionText}>Open Tasks</Text>
+            </Pressable>
+          </View>
+        </View>
       ) : (
         <View style={styles.list}>
           {preview.map((task) => {
@@ -72,11 +94,14 @@ export function TasksDueTodayCard() {
               </View>
             );
           })}
-          {tasks.length > 0 ? (
-            <Pressable onPress={handleViewAll} style={styles.viewAll}>
-              <Text style={styles.viewAllText}>View all</Text>
+          <View style={styles.actions}>
+            <Pressable onPress={openTasksToday} hitSlop={8}>
+              <Text style={styles.actionText}>View all</Text>
             </Pressable>
-          ) : null}
+            <Pressable onPress={openAddTask} hitSlop={8}>
+              <Text style={styles.actionText}>Add task</Text>
+            </Pressable>
+          </View>
         </View>
       )}
     </Card>
@@ -114,7 +139,16 @@ const styles = StyleSheet.create({
   errorBlock: {
     gap: spacing.sm,
   },
-  retry: {
+  emptyBlock: {
+    gap: spacing.sm,
+  },
+  actions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.lg,
+    paddingTop: spacing.xs,
+  },
+  actionText: {
     ...typography.bodySmall,
     color: colors.primary,
     fontWeight: '600',
@@ -139,15 +173,6 @@ const styles = StyleSheet.create({
   overdue: {
     ...typography.caption,
     color: colors.error,
-    fontWeight: '600',
-  },
-  viewAll: {
-    alignSelf: 'flex-start',
-    paddingTop: spacing.xs,
-  },
-  viewAllText: {
-    ...typography.bodySmall,
-    color: colors.primary,
     fontWeight: '600',
   },
 });
