@@ -19,12 +19,16 @@ export async function createUserDocument(
   uid: string,
   input: CreateUserProfileInput,
 ): Promise<void> {
-  await setDoc(userDocRef(uid), {
-    email: input.email,
-    displayName: input.displayName,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp(),
-  });
+  await setDoc(
+    userDocRef(uid),
+    {
+      email: input.email,
+      displayName: input.displayName,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    },
+    { merge: true },
+  );
 }
 
 export async function getUserDocument(uid: string): Promise<UserProfile | null> {

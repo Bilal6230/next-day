@@ -1,23 +1,22 @@
 import { FirebaseError } from 'firebase/app';
 
 const AUTH_MESSAGES: Record<string, string> = {
-  'auth/invalid-email': 'That email address is not valid.',
+  'auth/invalid-email': 'Please enter a valid email address.',
+  'auth/invalid-credential': 'Email or password is incorrect.',
+  'auth/wrong-password': 'Email or password is incorrect.',
+  'auth/user-not-found': 'Email or password is incorrect.',
+  'auth/email-already-in-use': 'This email is already registered.',
+  'auth/weak-password': 'Password is too weak.',
+  'auth/too-many-requests': 'Too many attempts. Please try again later.',
   'auth/user-disabled': 'This account has been disabled.',
-  'auth/user-not-found': 'No account found with this email.',
-  'auth/wrong-password': 'Incorrect password. Try again.',
-  'auth/invalid-credential': 'Invalid email or password.',
-  'auth/email-already-in-use': 'An account already exists with this email.',
-  'auth/weak-password': 'Choose a stronger password (at least 8 characters).',
-  'auth/too-many-requests': 'Too many attempts. Please wait and try again.',
-  'auth/network-request-failed': 'Network error. Check your connection.',
+  'auth/network-request-failed': 'Something went wrong. Please try again.',
 };
 
+const DEFAULT_AUTH_MESSAGE = 'Something went wrong. Please try again.';
+
 export function getAuthErrorMessage(error: unknown): string {
-  if (error instanceof FirebaseError && AUTH_MESSAGES[error.code]) {
-    return AUTH_MESSAGES[error.code];
+  if (error instanceof FirebaseError) {
+    return AUTH_MESSAGES[error.code] ?? DEFAULT_AUTH_MESSAGE;
   }
-  if (error instanceof Error && error.message) {
-    return error.message;
-  }
-  return 'Something went wrong. Please try again.';
+  return DEFAULT_AUTH_MESSAGE;
 }

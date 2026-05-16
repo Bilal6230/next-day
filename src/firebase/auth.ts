@@ -8,6 +8,8 @@ import {
   UserCredential,
 } from 'firebase/auth';
 
+import { normalizeAuthEmail } from '@/shared/utils/email';
+
 import { getFirebaseAuth } from './index';
 import { createUserDocument } from './firestore';
 
@@ -27,10 +29,11 @@ export async function signUp({
   password,
   displayName,
 }: SignUpParams): Promise<UserCredential> {
+  const normalizedEmail = normalizeAuthEmail(email);
   const auth = getFirebaseAuth();
   const credential = await createUserWithEmailAndPassword(
     auth,
-    email.trim(),
+    normalizedEmail,
     password,
   );
 
@@ -39,7 +42,7 @@ export async function signUp({
   });
 
   await createUserDocument(credential.user.uid, {
-    email: email.trim().toLowerCase(),
+    email: normalizedEmail,
     displayName: displayName.trim(),
   });
 
@@ -52,13 +55,13 @@ export async function signIn({
 }: SignInParams): Promise<UserCredential> {
   return signInWithEmailAndPassword(
     getFirebaseAuth(),
-    email.trim(),
+    normalizeAuthEmail(email),
     password,
   );
 }
 
 export async function resetPassword(email: string): Promise<void> {
-  await sendPasswordResetEmail(getFirebaseAuth(), email.trim());
+  await sendPasswordResetEmail(getFirebaseAuth(), normalizeAuthEmail(email));
 }
 
 export async function logOut(): Promise<void> {
