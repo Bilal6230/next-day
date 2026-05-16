@@ -3,20 +3,15 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/app/providers/AuthProvider';
 import { DashboardCard } from '@/features/today/components/DashboardCard';
+import { TasksDueTodayCard } from '@/features/today/components/TasksDueTodayCard';
 import { colors, spacing, typography } from '@/shared/theme';
 
-const DASHBOARD_SECTIONS = [
+const OTHER_SECTIONS = [
   {
     title: "Today's Focus",
     emptyTitle: 'No focus set yet',
     emptyDescription: 'Set one priority to anchor your day.',
     accent: colors.primary,
-  },
-  {
-    title: 'Tasks Due Today',
-    emptyTitle: 'No tasks due today',
-    emptyDescription: 'You are clear for now.',
-    accent: '#60A5FA',
   },
   {
     title: 'Bills Due Soon',
@@ -58,7 +53,14 @@ export function TodayScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        {DASHBOARD_SECTIONS.map((section) => (
+        <DashboardCard
+          title={OTHER_SECTIONS[0].title}
+          emptyTitle={OTHER_SECTIONS[0].emptyTitle}
+          emptyDescription={OTHER_SECTIONS[0].emptyDescription}
+          accent={OTHER_SECTIONS[0].accent}
+        />
+        <TasksDueTodayCard />
+        {OTHER_SECTIONS.slice(1).map((section) => (
           <DashboardCard
             key={section.title}
             title={section.title}

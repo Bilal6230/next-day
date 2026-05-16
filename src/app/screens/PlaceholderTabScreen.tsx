@@ -5,19 +5,12 @@ import type { MainTabParamList } from '@/app/navigation/types';
 import { Screen } from '@/shared/components';
 import { colors, spacing, typography } from '@/shared/theme';
 
-type PlaceholderRoute = RouteProp<
-  MainTabParamList,
-  'Tasks' | 'Money' | 'Growth' | 'More'
->;
+type PlaceholderRoute = RouteProp<MainTabParamList, 'Money' | 'Growth'>;
 
 const PLACEHOLDER_COPY: Record<
-  Exclude<keyof MainTabParamList, 'Today'>,
+  PlaceholderRoute['name'],
   { title: string; subtitle: string }
 > = {
-  Tasks: {
-    title: 'Tasks',
-    subtitle: 'Your task list is coming soon.',
-  },
   Money: {
     title: 'Money',
     subtitle:
@@ -26,10 +19,6 @@ const PLACEHOLDER_COPY: Record<
   Growth: {
     title: 'Growth',
     subtitle: 'Habits and goals will live here.',
-  },
-  More: {
-    title: 'More',
-    subtitle: 'Settings and account options.',
   },
 };
 
