@@ -24,15 +24,37 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 
 - [ ] Auth stack: Login ↔ Register ↔ Forgot password
 - [ ] Bottom tabs visible when signed in: Today, Tasks, Money, Growth, More
-- [ ] Placeholder tabs show title and subtitle
-- [ ] Today tab shows all five dashboard cards with empty states
+- [ ] Money and Growth placeholder tabs show title and subtitle
+- [ ] Tasks tab opens task list (not placeholder)
 
 ## Today dashboard
 
 - [ ] Greeting uses display name (or email prefix)
 - [ ] Cards: Today's Focus, Tasks Due Today, Bills Due Soon, Habit Progress, Quick Note
-- [ ] Each card shows empty state copy
+- [ ] **Tasks Due Today** shows loading, then live tasks or empty state
+- [ ] Overdue pending tasks appear with **Overdue** label
+- [ ] Tasks due tomorrow do not appear on Today card
+- [ ] Completed/archived tasks do not appear on Today card
+- [ ] At most 3 tasks shown; **View all** opens Tasks tab with Today filter
+- [ ] Other placeholder cards still show empty states
 - [ ] Scroll works on smaller screens
+
+## Tasks
+
+- [ ] **Add task** — title required; optional notes; priority; due date chips / picker
+- [ ] New task appears in list at `users/{uid}/tasks/{taskId}` in Firestore Console
+- [ ] **Edit task** — change title, notes, priority, due date; save persists
+- [ ] **Complete** — toggle marks completed; appears under Completed filter
+- [ ] **Incomplete** — toggle again returns to pending
+- [ ] **Archive** — task moves to Archived filter (from list or edit screen)
+- [ ] **Delete permanently** — confirmation required; document removed from Firestore
+- [ ] **All** filter — pending and completed (not archived)
+- [ ] **Today** filter — pending with due date today or earlier (overdue); no undated tasks
+- [ ] **Completed** / **Archived** filters behave correctly
+- [ ] Empty states per filter
+- [ ] Loading and error states; **Retry** works after error
+- [ ] Friendly Firestore errors (no raw `FirebaseError:` text)
+- [ ] `npm run typecheck` passes
 
 ## Security (Firebase Console)
 

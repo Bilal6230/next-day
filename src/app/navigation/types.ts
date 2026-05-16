@@ -1,5 +1,7 @@
 import type { NavigatorScreenParams } from '@react-navigation/native';
 
+import type { TasksStackParamList } from '@/features/tasks/navigation/types';
+
 export type AuthStackParamList = {
   Login: undefined;
   Register: undefined;
@@ -8,7 +10,7 @@ export type AuthStackParamList = {
 
 export type MainTabParamList = {
   Today: undefined;
-  Tasks: undefined;
+  Tasks: NavigatorScreenParams<TasksStackParamList>;
   Money: undefined;
   Growth: undefined;
   More: undefined;

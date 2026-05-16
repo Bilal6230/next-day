@@ -3,6 +3,7 @@ import { StyleSheet, Text } from 'react-native';
 
 import type { MainTabParamList } from '@/app/navigation/types';
 import { PlaceholderTabScreen } from '@/app/screens/PlaceholderTabScreen';
+import { TasksNavigator } from '@/features/tasks/navigation/TasksNavigator';
 import { MoreScreen } from '@/features/more/screens/MoreScreen';
 import { TodayScreen } from '@/features/today/screens/TodayScreen';
 import { colors, typography } from '@/shared/theme';
@@ -39,7 +40,7 @@ export function MainTabNavigator() {
       />
       <Tab.Screen
         name="Tasks"
-        component={PlaceholderTabScreen}
+        component={TasksNavigator}
         options={{
           tabBarLabel: ({ focused }) => (
             <TabLabel label="Tasks" focused={focused} />

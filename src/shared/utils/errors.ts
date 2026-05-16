@@ -20,3 +20,18 @@ export function getAuthErrorMessage(error: unknown): string {
   }
   return DEFAULT_AUTH_MESSAGE;
 }
+
+const FIRESTORE_MESSAGES: Record<string, string> = {
+  'permission-denied': 'You do not have permission to access this data.',
+  unavailable: 'You appear to be offline. Please try again.',
+  'deadline-exceeded': 'The request took too long. Please try again.',
+};
+
+const DEFAULT_FIRESTORE_MESSAGE = 'Something went wrong. Please try again.';
+
+export function getFirestoreErrorMessage(error: unknown): string {
+  if (error instanceof FirebaseError) {
+    return FIRESTORE_MESSAGES[error.code] ?? DEFAULT_FIRESTORE_MESSAGE;
+  }
+  return DEFAULT_FIRESTORE_MESSAGE;
+}
