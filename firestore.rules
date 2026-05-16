@@ -1,0 +1,28 @@
+rules_version = '2';
+
+// Next Day — Firestore security rules (draft)
+// Deploy: firebase deploy --only firestore:rules
+//
+// Principles:
+// - No global public read/write
+// - Authenticated users may only access their own user document tree
+// - Path convention: users/{uid} and users/{uid}/{subcollection}/...
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      // User profile document at users/{uid}
+      allow read, write: if isOwner(userId);
+
+      // All subcollections under the user (tasks, habits, notes, etc.)
+      match /{document=**} {
+        allow read, write: if isOwner(userId);
+      }
+    }
+
+    function isOwner(userId) {
+      return request.auth != null && request.auth.uid == userId;
+    }
+  }
+}
