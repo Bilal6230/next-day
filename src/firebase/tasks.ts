@@ -16,6 +16,7 @@ import {
 import {
   dueDateToFields,
   getTodayDateKey,
+  MIN_DUE_DATE_KEY,
 } from '@/features/tasks/utils/dates';
 import {
   validateCreateTaskInput,
@@ -71,6 +72,7 @@ function buildTaskQuery(uid: string, filter: TaskListFilter) {
       return query(
         col,
         where('status', '==', 'pending'),
+        where('dueDateKey', '>=', MIN_DUE_DATE_KEY),
         where('dueDateKey', '<=', todayKey),
         orderBy('dueDateKey', 'asc'),
         orderBy('createdAt', 'desc'),
@@ -102,6 +104,7 @@ function buildTasksDueTodayQuery(uid: string) {
   return query(
     tasksCollectionRef(uid),
     where('status', '==', 'pending'),
+    where('dueDateKey', '>=', MIN_DUE_DATE_KEY),
     where('dueDateKey', '<=', todayKey),
     orderBy('dueDateKey', 'asc'),
     orderBy('createdAt', 'desc'),
@@ -190,6 +193,7 @@ export async function updateTask(
     }
     if (patch.status === 'archived') {
       updates.archivedAt = serverTimestamp();
+      updates.completedAt = null;
     }
   }
 
@@ -200,6 +204,7 @@ export async function archiveTask(uid: string, taskId: string): Promise<void> {
   await updateDoc(taskDocRef(uid, taskId), {
     status: 'archived',
     archivedAt: serverTimestamp(),
+    completedAt: null,
     updatedAt: serverTimestamp(),
   });
 }

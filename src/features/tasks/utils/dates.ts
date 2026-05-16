@@ -2,6 +2,9 @@ import { Timestamp } from 'firebase/firestore';
 
 import type { Task } from '@/features/tasks/types';
 
+/** Lower bound for Firestore range queries so undated tasks (null dueDateKey) are excluded. */
+export const MIN_DUE_DATE_KEY = '0000-00-00';
+
 export function getLocalDateKey(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, '0');

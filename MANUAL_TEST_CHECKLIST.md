@@ -56,6 +56,19 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] Friendly Firestore errors (no raw `FirebaseError:` text)
 - [ ] `npm run typecheck` passes
 
+### Firestore composite indexes (Tasks)
+
+Create in Firebase Console when the app logs an index URL (collection: `users/{userId}/tasks`):
+
+| Use | Fields |
+|-----|--------|
+| **Today** / **Tasks Due Today** | `status` Asc, `dueDateKey` Asc, `createdAt` Desc |
+| **All** | `status` Asc, `updatedAt` Desc |
+| **Completed** | `status` Asc, `updatedAt` Desc |
+| **Archived** | `status` Asc, `updatedAt` Desc |
+
+Today queries use `dueDateKey >= '0000-00-00'` and `dueDateKey <= today` so undated tasks are excluded server-side.
+
 ## Security (Firebase Console)
 
 - [ ] Unauthenticated Firestore read/write denied
