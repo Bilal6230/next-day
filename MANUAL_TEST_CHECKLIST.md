@@ -79,7 +79,8 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] Re-tap mark done when already completed today is a no-op (no duplicate check-in)
 - [ ] **Undo today** — removes today check-in; streak fields update
 - [ ] Streak increments on consecutive daily check-ins
-- [ ] Streak resets after a skipped day
+- [ ] Streak resets after a skipped day (latest check-in before yesterday → **currentStreak** 0; **bestStreak** unchanged from history)
+- [ ] Archiving a habit removes its check-ins from weekly/today counts immediately
 - [ ] **bestStreak** recomputes from actual check-ins (undo can lower bestStreak)
 - [ ] Archived habits hidden from Growth active list and Today Habit Progress card
 - [ ] Weekly completion count uses week starting Monday

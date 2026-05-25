@@ -79,6 +79,25 @@ export function useHabitsProgress(): UseHabitsProgressResult {
   );
 
   useEffect(() => {
+    const activeIdSet = new Set(activeHabits.map((habit) => habit.id));
+    setCheckinsByHabit((prev) => {
+      const pruned: Record<string, Set<string>> = {};
+      for (const id of activeIdSet) {
+        if (prev[id]) pruned[id] = prev[id];
+      }
+      const prevKeys = Object.keys(prev);
+      const prunedKeys = Object.keys(pruned);
+      if (
+        prevKeys.length === prunedKeys.length &&
+        prunedKeys.every((key) => prev[key] === pruned[key])
+      ) {
+        return prev;
+      }
+      return pruned;
+    });
+  }, [activeHabitIds, activeHabits]);
+
+  useEffect(() => {
     if (!user?.uid) return;
 
     if (activeHabits.length === 0) {
@@ -127,9 +146,18 @@ export function useHabitsProgress(): UseHabitsProgressResult {
     [progressRows],
   );
 
+  const activeCheckinsByHabit = useMemo(() => {
+    const result: Record<string, Set<string>> = {};
+    for (const habit of activeHabits) {
+      const keys = checkinsByHabit[habit.id];
+      if (keys) result[habit.id] = keys;
+    }
+    return result;
+  }, [activeHabits, checkinsByHabit]);
+
   const weeklyCompletionCount = useMemo(
-    () => countWeeklyCompletions(checkinsByHabit),
-    [checkinsByHabit],
+    () => countWeeklyCompletions(activeCheckinsByHabit),
+    [activeCheckinsByHabit],
   );
 
   return {

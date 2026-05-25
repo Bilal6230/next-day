@@ -1,4 +1,8 @@
-import { getDateKeyBefore } from '@/features/growth/utils/dates';
+import {
+  getDateKeyBefore,
+  getTodayDateKey,
+  getYesterdayDateKey,
+} from '@/features/growth/utils/dates';
 
 export type StreakStats = {
   currentStreak: number;
@@ -10,6 +14,7 @@ export function sortDateKeysDesc(dateKeys: string[]): string[] {
   return [...new Set(dateKeys)].sort((a, b) => b.localeCompare(a));
 }
 
+/** Consecutive chain ending at the latest check-in date (sorted desc). */
 function countChainFromLatest(sortedDesc: string[]): number {
   if (sortedDesc.length === 0) return 0;
 
@@ -22,6 +27,20 @@ function countChainFromLatest(sortedDesc: string[]): number {
     }
   }
   return streak;
+}
+
+function computeCurrentStreak(sortedDesc: string[]): number {
+  if (sortedDesc.length === 0) return 0;
+
+  const latest = sortedDesc[0];
+  const today = getTodayDateKey();
+  const yesterday = getYesterdayDateKey();
+
+  if (latest !== today && latest !== yesterday) {
+    return 0;
+  }
+
+  return countChainFromLatest(sortedDesc);
 }
 
 function longestConsecutiveChain(sortedDesc: string[]): number {
@@ -54,7 +73,7 @@ export function computeStreakStats(dateKeys: string[]): StreakStats {
   }
 
   return {
-    currentStreak: countChainFromLatest(sorted),
+    currentStreak: computeCurrentStreak(sorted),
     bestStreak: longestConsecutiveChain(sorted),
     lastCompletedDateKey: sorted[0],
   };
