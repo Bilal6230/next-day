@@ -30,8 +30,6 @@ export function getNextBillDueDateKey(
 ): string | null {
   if (bill.status !== 'active') return null;
 
-  const todayKey = getTodayDateKey();
-
   if (bill.repeatType === 'none') {
     if (!bill.dueDateKey) return null;
     if (isBillPaidForCurrentPeriod(bill, from)) return null;
@@ -44,10 +42,7 @@ export function getNextBillDueDateKey(
   const monthIndex = from.getMonth();
   const thisMonthKey = dueDateKeyForMonth(year, monthIndex, bill.dueDayOfMonth);
 
-  if (
-    thisMonthKey >= todayKey &&
-    !isBillPaidForCurrentPeriod(bill, from)
-  ) {
+  if (!isBillPaidForCurrentPeriod(bill, from)) {
     return thisMonthKey;
   }
 
@@ -69,9 +64,8 @@ export function isBillDueWithinWindow(
   const dueKey = getNextBillDueDateKey(bill, from);
   if (!dueKey) return false;
 
-  const todayKey = getTodayDateKey();
   const endKey = getDateKeyAfterDays(from, windowDays);
-  return dueKey >= todayKey && dueKey <= endKey;
+  return dueKey <= endKey;
 }
 
 export function isBillOverdue(bill: Bill, from: Date = new Date()): boolean {
@@ -86,8 +80,10 @@ export function formatBillDueLabel(bill: Bill, from: Date = new Date()): string 
   const todayKey = getTodayDateKey();
   if (dueKey < todayKey) return 'Overdue';
   if (dueKey === todayKey) return 'Due today';
-  const endKey = getDateKeyAfterDays(from, 1);
-  if (dueKey === endKey) return 'Due tomorrow';
+  const tomorrowKey = getLocalDateKey(
+    new Date(from.getFullYear(), from.getMonth(), from.getDate() + 1),
+  );
+  if (dueKey === tomorrowKey) return 'Due tomorrow';
   const [year, month, day] = dueKey.split('-').map(Number);
   const date = new Date(year, month - 1, day);
   return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });

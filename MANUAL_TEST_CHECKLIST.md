@@ -71,7 +71,9 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 ## Money
 
 - [ ] **Money tab** — monthly PKR spending summary for current month
-- [ ] **Bills due soon** — active unpaid bills due in next 7 days
+- [ ] **Bills due soon** — overdue unpaid, due today, and due within next 7 days
+- [ ] Monthly bill overdue this month (e.g. due day 10, today 16, unpaid) shows **Overdue**
+- [ ] Monthly bill paid for current month shows next month’s due date (not in due soon until window)
 - [ ] **Recent expenses** — latest expenses listed
 - [ ] **Add bill** — one-time (due date) and monthly (day 1–31)
 - [ ] Amounts stored as `amountMinor` integer in Firestore (not float)

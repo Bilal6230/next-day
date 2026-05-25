@@ -1,11 +1,13 @@
 import { EXPENSE_CATEGORIES } from '@/features/money/constants';
 import type {
+  Bill,
   CreateBillInput,
   CreateExpenseInput,
   ExpenseCategory,
   UpdateBillInput,
   UpdateExpenseInput,
 } from '@/features/money/types';
+import { timestampToDate } from '@/features/money/utils/dates';
 import { DEFAULT_CURRENCY } from '@/shared/utils/money';
 
 export type BillFieldErrors = Partial<
@@ -34,15 +36,19 @@ export function validateBillAmount(amountMinor: number): string | undefined {
   return undefined;
 }
 
-export function validateCreateBillInput(input: CreateBillInput): BillFieldErrors {
+export function validateBillEffectiveState(input: CreateBillInput): BillFieldErrors {
   const errors: BillFieldErrors = {};
   const nameError = validateBillName(input.name);
   if (nameError) errors.name = nameError;
   const amountError = validateBillAmount(input.amountMinor);
   if (amountError) errors.amount = amountError;
-  if (input.repeatType === 'none' && !input.dueDate) {
-    errors.dueDate = 'Due date is required';
+
+  if (input.repeatType === 'none') {
+    if (!input.dueDate) {
+      errors.dueDate = 'Due date is required';
+    }
   }
+
   if (input.repeatType === 'monthly') {
     if (
       input.dueDayOfMonth == null ||
@@ -52,20 +58,46 @@ export function validateCreateBillInput(input: CreateBillInput): BillFieldErrors
       errors.dueDayOfMonth = 'Enter a day between 1 and 31';
     }
   }
+
   return errors;
 }
 
-export function validateUpdateBillInput(input: UpdateBillInput): BillFieldErrors {
-  const errors: BillFieldErrors = {};
-  if (input.name !== undefined) {
-    const nameError = validateBillName(input.name);
-    if (nameError) errors.name = nameError;
-  }
-  if (input.amountMinor !== undefined) {
-    const amountError = validateBillAmount(input.amountMinor);
-    if (amountError) errors.amount = amountError;
-  }
-  return errors;
+export function validateCreateBillInput(input: CreateBillInput): BillFieldErrors {
+  return validateBillEffectiveState(input);
+}
+
+export function billToEffectiveInput(bill: Bill): CreateBillInput {
+  return {
+    name: bill.name,
+    amountMinor: bill.amountMinor,
+    currency: bill.currency,
+    repeatType: bill.repeatType,
+    dueDate: timestampToDate(bill.dueDate),
+    dueDayOfMonth: bill.dueDayOfMonth,
+  };
+}
+
+export function mergeBillWithPatch(
+  existing: Bill,
+  patch: UpdateBillInput,
+): CreateBillInput {
+  const base = billToEffectiveInput(existing);
+  return {
+    name: patch.name ?? base.name,
+    amountMinor: patch.amountMinor ?? base.amountMinor,
+    currency: patch.currency ?? base.currency,
+    repeatType: patch.repeatType ?? base.repeatType,
+    dueDate: patch.dueDate !== undefined ? patch.dueDate : base.dueDate,
+    dueDayOfMonth:
+      patch.dueDayOfMonth !== undefined ? patch.dueDayOfMonth : base.dueDayOfMonth,
+  };
+}
+
+export function validateUpdateBillInput(
+  existing: Bill,
+  patch: UpdateBillInput,
+): BillFieldErrors {
+  return validateBillEffectiveState(mergeBillWithPatch(existing, patch));
 }
 
 export function isExpenseCategory(value: string): value is ExpenseCategory {
@@ -94,9 +126,6 @@ export function validateCreateExpenseInput(
   }
   if (!input.spentDate) {
     errors.spentDate = 'Spent date is required';
-  }
-  if (input.currency !== DEFAULT_CURRENCY) {
-    // MVP: PKR only in forms
   }
   return errors;
 }

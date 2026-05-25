@@ -20,6 +20,7 @@ import {
   getCurrentMonthKey,
 } from '@/features/money/utils/dates';
 import {
+  mergeBillWithPatch,
   validateCreateBillInput,
   validateUpdateBillInput,
 } from '@/features/money/utils/validation';
@@ -114,7 +115,11 @@ export async function updateBill(
   billId: string,
   patch: UpdateBillInput,
 ): Promise<void> {
-  const errors = validateUpdateBillInput(patch);
+  const existing = await getBill(uid, billId);
+  if (!existing) throw new Error('Bill not found');
+
+  const effective = mergeBillWithPatch(existing, patch);
+  const errors = validateUpdateBillInput(existing, patch);
   if (Object.keys(errors).length > 0) {
     throw new Error(Object.values(errors).find(Boolean) ?? 'Invalid bill');
   }
@@ -123,24 +128,25 @@ export async function updateBill(
     updatedAt: serverTimestamp(),
   };
 
-  if (patch.name !== undefined) updates.name = patch.name.trim();
-  if (patch.amountMinor !== undefined) updates.amountMinor = patch.amountMinor;
-  if (patch.currency !== undefined) updates.currency = patch.currency;
-  if (patch.repeatType !== undefined) updates.repeatType = patch.repeatType;
+  if (patch.name !== undefined) updates.name = effective.name.trim();
+  if (patch.amountMinor !== undefined) updates.amountMinor = effective.amountMinor;
+  if (patch.currency !== undefined) updates.currency = effective.currency;
+  if (patch.repeatType !== undefined) updates.repeatType = effective.repeatType;
   if (patch.status !== undefined) updates.status = patch.status;
 
-  if (patch.repeatType === 'monthly' || patch.dueDayOfMonth !== undefined) {
-    if (patch.repeatType === 'monthly' || patch.dueDayOfMonth != null) {
+  if (
+    patch.repeatType !== undefined ||
+    patch.dueDayOfMonth !== undefined ||
+    patch.dueDate !== undefined
+  ) {
+    if (effective.repeatType === 'monthly') {
       Object.assign(updates, {
         dueDate: null,
         dueDateKey: null,
-        dueDayOfMonth: patch.dueDayOfMonth,
+        dueDayOfMonth: effective.dueDayOfMonth,
       });
-    }
-  }
-  if (patch.dueDate !== undefined || patch.repeatType === 'none') {
-    if (patch.repeatType !== 'monthly') {
-      Object.assign(updates, dueDateToFields(patch.dueDate ?? null));
+    } else {
+      Object.assign(updates, dueDateToFields(effective.dueDate));
       updates.dueDayOfMonth = null;
     }
   }
@@ -166,7 +172,7 @@ export async function markBillPaid(uid: string, billId: string): Promise<void> {
   if (bill.repeatType === 'monthly') {
     await updateDoc(billDocRef(uid, billId), {
       paidForMonthKey: getCurrentMonthKey(),
-      paidAt: null,
+      paidAt: serverTimestamp(),
       updatedAt: serverTimestamp(),
     });
     return;
