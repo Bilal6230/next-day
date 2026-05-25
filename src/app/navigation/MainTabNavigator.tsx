@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { MainTabParamList } from '@/app/navigation/types';
 import { PlaceholderTabScreen } from '@/app/screens/PlaceholderTabScreen';
+import { GrowthNavigator } from '@/features/growth/navigation/GrowthNavigator';
 import { TasksNavigator } from '@/features/tasks/navigation/TasksNavigator';
 import { MoreScreen } from '@/features/more/screens/MoreScreen';
 import { TodayScreen } from '@/features/today/screens/TodayScreen';
@@ -71,7 +72,7 @@ export function MainTabNavigator() {
       />
       <Tab.Screen
         name="Growth"
-        component={PlaceholderTabScreen}
+        component={GrowthNavigator}
         options={{
           tabBarLabel: ({ focused }) => (
             <TabLabel label="Growth" focused={focused} />

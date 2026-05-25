@@ -3,6 +3,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/app/providers/AuthProvider';
 import { DashboardCard } from '@/features/today/components/DashboardCard';
+import { HabitProgressCard } from '@/features/today/components/HabitProgressCard';
 import { TasksDueTodayCard } from '@/features/today/components/TasksDueTodayCard';
 import { colors, spacing, typography } from '@/shared/theme';
 
@@ -18,12 +19,6 @@ const OTHER_SECTIONS = [
     emptyTitle: 'No upcoming bills',
     emptyDescription: 'Financial reminders will appear here.',
     accent: '#FBBF24',
-  },
-  {
-    title: 'Habit Progress',
-    emptyTitle: 'No habits tracked yet',
-    emptyDescription: 'Build streaks in Growth when ready.',
-    accent: '#34D399',
   },
   {
     title: 'Quick Note',
@@ -60,6 +55,7 @@ export function TodayScreen() {
           accent={OTHER_SECTIONS[0].accent}
         />
         <TasksDueTodayCard />
+        <HabitProgressCard />
         {OTHER_SECTIONS.slice(1).map((section) => (
           <DashboardCard
             key={section.title}
