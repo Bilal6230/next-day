@@ -4,6 +4,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import type { MainTabParamList } from '@/app/navigation/types';
 import { PlaceholderTabScreen } from '@/app/screens/PlaceholderTabScreen';
+import { MoneyNavigator } from '@/features/money/navigation/MoneyNavigator';
 import { TasksNavigator } from '@/features/tasks/navigation/TasksNavigator';
 import { MoreScreen } from '@/features/more/screens/MoreScreen';
 import { TodayScreen } from '@/features/today/screens/TodayScreen';
@@ -62,7 +63,7 @@ export function MainTabNavigator() {
       />
       <Tab.Screen
         name="Money"
-        component={PlaceholderTabScreen}
+        component={MoneyNavigator}
         options={{
           tabBarLabel: ({ focused }) => (
             <TabLabel label="Money" focused={focused} />

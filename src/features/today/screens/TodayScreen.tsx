@@ -2,6 +2,7 @@ import { ScrollView, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/app/providers/AuthProvider';
+import { BillsDueSoonCard } from '@/features/today/components/BillsDueSoonCard';
 import { DashboardCard } from '@/features/today/components/DashboardCard';
 import { TasksDueTodayCard } from '@/features/today/components/TasksDueTodayCard';
 import { colors, spacing, typography } from '@/shared/theme';
@@ -12,12 +13,6 @@ const OTHER_SECTIONS = [
     emptyTitle: 'No focus set yet',
     emptyDescription: 'Set one priority to anchor your day.',
     accent: colors.primary,
-  },
-  {
-    title: 'Bills Due Soon',
-    emptyTitle: 'No upcoming bills',
-    emptyDescription: 'Financial reminders will appear here.',
-    accent: '#FBBF24',
   },
   {
     title: 'Habit Progress',
@@ -60,6 +55,7 @@ export function TodayScreen() {
           accent={OTHER_SECTIONS[0].accent}
         />
         <TasksDueTodayCard />
+        <BillsDueSoonCard />
         {OTHER_SECTIONS.slice(1).map((section) => (
           <DashboardCard
             key={section.title}
