@@ -27,6 +27,7 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] Tasks tab opens task list (not placeholder)
 - [ ] Money tab opens Money hub (not placeholder)
 - [ ] Growth tab opens habit list (not placeholder)
+- [ ] More → **Notes** opens notes list; sign out still works from More home
 - [ ] **Android:** Bottom tabs visible above system navigation (Today, Tasks, Money, Growth, More labels readable)
 
 ## Today dashboard
@@ -45,7 +46,10 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] **Habit Progress** shows loading, then live summary or empty state
 - [ ] Habit Progress: at most 3 habits; **Add habit** / **Open Growth** navigate correctly
 - [ ] Habit Progress empty/error states show **Add habit** and/or **Open Growth**
-- [ ] Other placeholder cards still show empty states
+- [ ] **Quick Note** shows loading, pinned/latest active note, or empty state
+- [ ] Quick Note: tap preview opens edit; **Add note** / **Open Notes** navigate to More stack
+- [ ] Archived notes never appear on Quick Note card
+- [ ] Today's Focus placeholder card still shows empty state
 - [ ] Scroll works on smaller screens
 
 ## Tasks
@@ -113,6 +117,27 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 
 - [ ] Habits and check-ins load without composite indexes (client-side filter on `users/{uid}/habits`)
 
+## Notes
+
+- [ ] **More → Notes** opens list with search and Active / Archived filters
+- [ ] **Sign out** from More home still works
+- [ ] **Add note** — title only (body optional); doc at `users/{uid}/notes/{noteId}`
+- [ ] **Add note** with body and comma-separated tags (normalized: trim, lowercase, dedupe)
+- [ ] **Edit note** — title, body, tags, pinned persist
+- [ ] **Pin / Unpin** from list and form
+- [ ] **Search** matches title, body, or tags (case-insensitive)
+- [ ] **Archive** — confirmation; hidden from Active filter and Today Quick Note
+- [ ] **Delete permanently** — two-step confirmation; doc removed from Firestore
+- [ ] **Quick Note** (Today): latest pinned active note when pins exist
+- [ ] **Quick Note**: latest active note when no pinned actives
+- [ ] Tag limits: max 10 tags, 24 chars each; title max 160; body max 10000
+- [ ] Friendly Firestore errors (no raw `FirebaseError:` text)
+- [ ] `npm run typecheck` passes
+
+### Notes data (MVP)
+
+- [ ] Notes load without composite indexes (collection snapshot + client filter/sort)
+
 ## Security (Firebase Console)
 
 - [ ] Unauthenticated Firestore read/write denied
@@ -124,3 +149,4 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] No hardcoded user IDs in source
 - [ ] `.env` not tracked by git
 - [ ] App runs after cold start with persisted session (AsyncStorage auth persistence)
+- [ ] Tasks, Money, and Growth flows unchanged after Notes MVP

@@ -5,23 +5,16 @@ import { useAuth } from '@/app/providers/AuthProvider';
 import { BillsDueSoonCard } from '@/features/today/components/BillsDueSoonCard';
 import { DashboardCard } from '@/features/today/components/DashboardCard';
 import { HabitProgressCard } from '@/features/today/components/HabitProgressCard';
+import { QuickNoteCard } from '@/features/today/components/QuickNoteCard';
 import { TasksDueTodayCard } from '@/features/today/components/TasksDueTodayCard';
 import { colors, spacing, typography } from '@/shared/theme';
 
-const OTHER_SECTIONS = [
-  {
-    title: "Today's Focus",
-    emptyTitle: 'No focus set yet',
-    emptyDescription: 'Set one priority to anchor your day.',
-    accent: colors.primary,
-  },
-  {
-    title: 'Quick Note',
-    emptyTitle: 'No note saved',
-    emptyDescription: 'Capture a thought for today.',
-    accent: '#F472B6',
-  },
-] as const;
+const FOCUS_SECTION = {
+  title: "Today's Focus",
+  emptyTitle: 'No focus set yet',
+  emptyDescription: 'Set one priority to anchor your day.',
+  accent: colors.primary,
+} as const;
 
 export function TodayScreen() {
   const insets = useSafeAreaInsets();
@@ -44,23 +37,15 @@ export function TodayScreen() {
         showsVerticalScrollIndicator={false}
       >
         <DashboardCard
-          title={OTHER_SECTIONS[0].title}
-          emptyTitle={OTHER_SECTIONS[0].emptyTitle}
-          emptyDescription={OTHER_SECTIONS[0].emptyDescription}
-          accent={OTHER_SECTIONS[0].accent}
+          title={FOCUS_SECTION.title}
+          emptyTitle={FOCUS_SECTION.emptyTitle}
+          emptyDescription={FOCUS_SECTION.emptyDescription}
+          accent={FOCUS_SECTION.accent}
         />
         <TasksDueTodayCard />
         <BillsDueSoonCard />
         <HabitProgressCard />
-        {OTHER_SECTIONS.slice(1).map((section) => (
-          <DashboardCard
-            key={section.title}
-            title={section.title}
-            emptyTitle={section.emptyTitle}
-            emptyDescription={section.emptyDescription}
-            accent={section.accent}
-          />
-        ))}
+        <QuickNoteCard />
       </ScrollView>
     </View>
   );
