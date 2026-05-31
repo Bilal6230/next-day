@@ -24,9 +24,9 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 
 - [ ] Auth stack: Login ↔ Register ↔ Forgot password
 - [ ] Bottom tabs visible when signed in: Today, Tasks, Money, Growth, More
-- [ ] Growth placeholder tab shows title and subtitle
 - [ ] Tasks tab opens task list (not placeholder)
 - [ ] Money tab opens Money hub (not placeholder)
+- [ ] Growth tab opens habit list (not placeholder)
 - [ ] **Android:** Bottom tabs visible above system navigation (Today, Tasks, Money, Growth, More labels readable)
 
 ## Today dashboard
@@ -42,6 +42,9 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] **Bills Due Soon** shows loading, live bills (max 3), or empty state
 - [ ] Bills due within 7 days appear; paid bills hidden from card
 - [ ] **Add bill** / **Open Money** / **View all** on Bills card navigate correctly
+- [ ] **Habit Progress** shows loading, then live summary or empty state
+- [ ] Habit Progress: at most 3 habits; **Add habit** / **Open Growth** navigate correctly
+- [ ] Habit Progress empty/error states show **Add habit** and/or **Open Growth**
 - [ ] Other placeholder cards still show empty states
 - [ ] Scroll works on smaller screens
 
@@ -85,6 +88,30 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] Documents at `users/{uid}/bills/{billId}` and `users/{uid}/expenses/{expenseId}`
 - [ ] Bills/expenses load without composite indexes (collection snapshot + client filter)
 - [ ] Friendly errors; no raw Firebase messages
+
+## Growth / Habits
+
+- [ ] **Add habit** — title required; optional description; frequency shown as Daily
+- [ ] New habit at `users/{uid}/habits/{habitId}` in Firestore Console
+- [ ] **Edit habit** — change title/description; save persists
+- [ ] **Archive habit** — confirmation required; hidden from active list and Today dashboard
+- [ ] No hard delete for habits
+- [ ] **Mark done today** — creates check-in at `users/{uid}/habits/{habitId}/checkins/{dateKey}` (doc id = dateKey)
+- [ ] Re-tap mark done when already completed today is a no-op (no duplicate check-in)
+- [ ] **Undo today** — removes today check-in; streak fields update
+- [ ] Streak increments on consecutive daily check-ins
+- [ ] Streak resets after a skipped day (latest check-in before yesterday → **currentStreak** 0; **bestStreak** unchanged from history)
+- [ ] Archiving a habit removes its check-ins from weekly/today counts immediately
+- [ ] **bestStreak** recomputes from actual check-ins (undo can lower bestStreak)
+- [ ] Archived habits hidden from Growth active list and Today Habit Progress card
+- [ ] Weekly completion count uses week starting Monday
+- [ ] Growth screen: today summary, weekly summary, active list, loading/error/retry
+- [ ] Today dashboard Habit Progress card updates when habits/check-ins change
+- [ ] Friendly Firestore errors (no raw `FirebaseError:` text)
+
+### Habits data (MVP)
+
+- [ ] Habits and check-ins load without composite indexes (client-side filter on `users/{uid}/habits`)
 
 ## Security (Firebase Console)
 
