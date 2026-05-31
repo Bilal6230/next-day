@@ -5,17 +5,12 @@ import type { MainTabParamList } from '@/app/navigation/types';
 import { Screen } from '@/shared/components';
 import { colors, spacing, typography } from '@/shared/theme';
 
-type PlaceholderRoute = RouteProp<MainTabParamList, 'Money' | 'Growth'>;
+type PlaceholderRoute = RouteProp<MainTabParamList, 'Growth'>;
 
 const PLACEHOLDER_COPY: Record<
   PlaceholderRoute['name'],
   { title: string; subtitle: string }
 > = {
-  Money: {
-    title: 'Money',
-    subtitle:
-      'Track bills and budgets. Amounts will use integer cents — never floats.',
-  },
   Growth: {
     title: 'Growth',
     subtitle: 'Habits and goals will live here.',
