@@ -156,6 +156,7 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] Archived goal edit: Save allowed; no Mark active; Archive hidden
 - [ ] Active goal past target shows **Overdue** label
 - [ ] No hard delete for goals
+- [ ] Saving a goal cannot change status directly; use Mark complete / Mark active / Archive only
 - [ ] Friendly Firestore errors (no raw `FirebaseError:` text)
 
 ### Goals data (MVP)

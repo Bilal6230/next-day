@@ -129,7 +129,6 @@ export async function updateGoal(
     updates.progressPercent = patch.progressPercent;
   }
   applyTargetDatePatch(updates, patch.targetDate);
-  if (patch.status !== undefined) updates.status = patch.status;
 
   await updateDoc(goalDocRef(uid, goalId), updates);
 }

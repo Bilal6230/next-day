@@ -84,8 +84,8 @@ export function validateUpdateGoalInput(input: UpdateGoalInput): GoalFieldErrors
     const progressError = validateProgressPercent(input.progressPercent);
     if (progressError) errors.progressPercent = progressError;
   }
-  if (input.status !== undefined && !isGoalStatus(input.status)) {
-    errors.status = 'Invalid status';
+  if (input.status !== undefined) {
+    errors.status = 'Use goal lifecycle actions to change status.';
   }
   return errors;
 }
