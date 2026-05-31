@@ -26,7 +26,7 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] Bottom tabs visible when signed in: Today, Tasks, Money, Growth, More
 - [ ] Tasks tab opens task list (not placeholder)
 - [ ] Money tab opens Money hub (not placeholder)
-- [ ] Growth tab opens habit list (not placeholder)
+- [ ] Growth tab shows **Habits** and **Goals** sections (not placeholder)
 - [ ] More → **Notes** opens notes list; sign out still works from More home
 - [ ] **Android:** Bottom tabs visible above system navigation (Today, Tasks, Money, Growth, More labels readable)
 
@@ -142,6 +142,26 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 
 - [ ] Notes load without composite indexes (collection snapshot + client filter/sort)
 
+## Goals
+
+- [ ] Growth tab shows **Habits** and **Goals** with separate loading/error states
+- [ ] **Add goal** — title required; category; progress 0–100; optional target date
+- [ ] Doc at `users/{uid}/goals/{goalId}` with correct fields and timestamps
+- [ ] **Edit goal** — title, description, category, progress, target date persist
+- [ ] **Active / Completed / Archived** filters work (client-side)
+- [ ] Progress 100 does **not** auto-complete; user must **Mark complete**
+- [ ] **Mark complete** from active goal
+- [ ] **Mark active** reopens completed goal (not archived)
+- [ ] **Archive** with confirmation; `pinned` N/A; archived cannot reopen
+- [ ] Archived goal edit: Save allowed; no Mark active; Archive hidden
+- [ ] Active goal past target shows **Overdue** label
+- [ ] No hard delete for goals
+- [ ] Friendly Firestore errors (no raw `FirebaseError:` text)
+
+### Goals data (MVP)
+
+- [ ] Goals load without composite indexes (collection snapshot + client filter/sort)
+
 ## Security (Firebase Console)
 
 - [ ] Unauthenticated Firestore read/write denied
@@ -153,4 +173,5 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] No hardcoded user IDs in source
 - [ ] `.env` not tracked by git
 - [ ] App runs after cold start with persisted session (AsyncStorage auth persistence)
-- [ ] Tasks, Money, and Growth flows unchanged after Notes MVP
+- [ ] Tasks, Money, Notes, and Today dashboard (except Growth) unchanged after Goals MVP
+- [ ] Habits still work: mark done, undo, archive, streaks
