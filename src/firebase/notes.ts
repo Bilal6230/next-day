@@ -58,10 +58,11 @@ function mapNoteDoc(id: string, data: Record<string, unknown>): Note {
 }
 
 function sanitizeCreateInput(input: CreateNoteInput): CreateNoteInput {
+  const rawTags = (input.tags ?? []).map((tag) => String(tag).trim());
   return {
     title: input.title.trim(),
     body: input.body?.trim() ?? '',
-    tags: normalizeTags(input.tags ?? []),
+    tags: normalizeTags(rawTags),
     pinned: Boolean(input.pinned),
   };
 }
@@ -70,7 +71,10 @@ function sanitizeUpdatePatch(patch: UpdateNoteInput): UpdateNoteInput {
   const sanitized: UpdateNoteInput = { ...patch };
   if (patch.title !== undefined) sanitized.title = patch.title.trim();
   if (patch.body !== undefined) sanitized.body = patch.body.trim();
-  if (patch.tags !== undefined) sanitized.tags = normalizeTags(patch.tags);
+  if (patch.tags !== undefined) {
+    const rawTags = patch.tags.map((tag) => String(tag).trim());
+    sanitized.tags = normalizeTags(rawTags);
+  }
   return sanitized;
 }
 
@@ -87,11 +91,18 @@ export async function createNote(
   uid: string,
   input: CreateNoteInput,
 ): Promise<string> {
-  const sanitized = sanitizeCreateInput(input);
-  const errors = validateCreateNoteInput(sanitized);
+  const rawTags = (input.tags ?? []).map((tag) => String(tag).trim());
+  const errors = validateCreateNoteInput({
+    title: input.title,
+    body: input.body ?? '',
+    tags: rawTags,
+    pinned: input.pinned,
+  });
   if (Object.keys(errors).length > 0) {
     throw new Error(Object.values(errors).find(Boolean) ?? 'Invalid note');
   }
+
+  const sanitized = sanitizeCreateInput({ ...input, tags: rawTags });
 
   const ref = doc(notesCollectionRef(uid));
   await setDoc(ref, {
@@ -112,10 +123,22 @@ export async function updateNote(
   noteId: string,
   patch: UpdateNoteInput,
 ): Promise<void> {
-  const sanitized = sanitizeUpdatePatch(patch);
-  const errors = validateUpdateNoteInput(sanitized);
+  const validationPatch: UpdateNoteInput = { ...patch };
+  if (patch.tags !== undefined) {
+    validationPatch.tags = patch.tags.map((tag) => String(tag).trim());
+  }
+  const errors = validateUpdateNoteInput(validationPatch);
   if (Object.keys(errors).length > 0) {
     throw new Error(Object.values(errors).find(Boolean) ?? 'Invalid note');
+  }
+
+  const sanitized = sanitizeUpdatePatch(patch);
+
+  if (sanitized.pinned === true) {
+    const existing = await getNote(uid, noteId);
+    if (existing?.status === 'archived') {
+      throw new Error('Cannot pin an archived note');
+    }
   }
 
   const updates: Record<string, unknown> = {
@@ -148,6 +171,16 @@ export async function setNotePinned(
   noteId: string,
   pinned: boolean,
 ): Promise<void> {
+  if (pinned) {
+    const note = await getNote(uid, noteId);
+    if (!note) {
+      throw new Error('Note not found');
+    }
+    if (note.status === 'archived') {
+      throw new Error('Cannot pin an archived note');
+    }
+  }
+
   await updateDoc(noteDocRef(uid, noteId), {
     pinned,
     updatedAt: serverTimestamp(),

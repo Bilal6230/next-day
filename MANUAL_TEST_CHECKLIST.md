@@ -123,8 +123,12 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] **Sign out** from More home still works
 - [ ] **Add note** — title only (body optional); doc at `users/{uid}/notes/{noteId}`
 - [ ] **Add note** with body and comma-separated tags (normalized: trim, lowercase, dedupe)
+- [ ] More than 10 tags shows **Maximum 10 tags allowed** (not silently dropped)
+- [ ] Tag longer than 24 chars shows **Each tag must be 24 characters or less**
 - [ ] **Edit note** — title, body, tags, pinned persist
-- [ ] **Pin / Unpin** from list and form
+- [ ] **Pin / Unpin** from list and form (active notes only)
+- [ ] Archived notes: no Pin/Unpin on list; pin switch disabled on edit form
+- [ ] Cannot pin an archived note from data layer
 - [ ] **Search** matches title, body, or tags (case-insensitive)
 - [ ] **Archive** — confirmation; hidden from Active filter and Today Quick Note
 - [ ] **Delete permanently** — two-step confirmation; doc removed from Firestore

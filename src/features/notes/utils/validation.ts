@@ -4,7 +4,7 @@ import {
   MAX_NOTE_TAG_LENGTH,
   MAX_NOTE_TITLE_LENGTH,
 } from '@/features/notes/constants';
-import { normalizeTags } from '@/features/notes/utils/tags';
+import { getNonEmptyRawTags } from '@/features/notes/utils/tags';
 import type { CreateNoteInput, NoteStatus, UpdateNoteInput } from '@/features/notes/types';
 
 export type NoteFieldErrors = Partial<
@@ -33,17 +33,20 @@ export function validateNoteBody(body: string): string | undefined {
   return undefined;
 }
 
-export function validateNoteTags(tags: string[]): string | undefined {
-  const normalized = normalizeTags(tags);
-  if (normalized.length > MAX_NOTE_TAGS) {
-    return `Maximum ${MAX_NOTE_TAGS} tags allowed`;
-  }
-  for (const tag of tags) {
-    const trimmed = tag.trim().toLowerCase();
-    if (trimmed && trimmed.length > MAX_NOTE_TAG_LENGTH) {
+/** Validate raw trimmed tags before normalization. */
+export function validateNoteTags(rawTags: string[]): string | undefined {
+  const nonEmpty = getNonEmptyRawTags(rawTags);
+
+  for (const tag of nonEmpty) {
+    if (tag.length > MAX_NOTE_TAG_LENGTH) {
       return `Each tag must be ${MAX_NOTE_TAG_LENGTH} characters or less`;
     }
   }
+
+  if (nonEmpty.length > MAX_NOTE_TAGS) {
+    return `Maximum ${MAX_NOTE_TAGS} tags allowed`;
+  }
+
   return undefined;
 }
 

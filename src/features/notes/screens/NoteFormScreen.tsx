@@ -14,7 +14,12 @@ import {
   type NoteFormValues,
 } from '@/features/notes/components/NoteForm';
 import type { MoreStackParamList } from '@/features/more/navigation/types';
-import { parseTagsInput, tagsToInput } from '@/features/notes/utils/tags';
+import {
+  normalizeTags,
+  splitTagsInput,
+  tagsToInput,
+} from '@/features/notes/utils/tags';
+import type { NoteStatus } from '@/features/notes/types';
 import {
   getFirstNoteFieldError,
   validateCreateNoteInput,
@@ -57,6 +62,7 @@ export function NoteFormScreen() {
   const [formError, setFormError] = useState('');
   const [loading, setLoading] = useState(false);
   const [loadingNote, setLoadingNote] = useState(isEdit);
+  const [noteStatus, setNoteStatus] = useState<NoteStatus>('active');
 
   useEffect(() => {
     if (!noteId || !user?.uid) {
@@ -74,6 +80,7 @@ export function NoteFormScreen() {
           setLoadingNote(false);
           return;
         }
+        setNoteStatus(note.status);
         setValues({
           title: note.title,
           body: note.body,
@@ -92,22 +99,35 @@ export function NoteFormScreen() {
     };
   }, [noteId, user?.uid]);
 
-  const buildInput = () => ({
-    title: values.title,
-    body: values.body,
-    tags: parseTagsInput(values.tags),
-    pinned: values.pinned,
-  });
+  const buildInput = () => {
+    const rawTags = splitTagsInput(values.tags);
+    return {
+      title: values.title,
+      body: values.body,
+      tags: normalizeTags(rawTags),
+      pinned: noteStatus === 'archived' ? false : values.pinned,
+    };
+  };
+
+  const validateForm = () => {
+    const rawTags = splitTagsInput(values.tags);
+    return validateCreateNoteInput({
+      title: values.title,
+      body: values.body,
+      tags: rawTags,
+      pinned: values.pinned,
+    });
+  };
 
   const handleSave = async () => {
     if (!user?.uid) return;
 
-    const input = buildInput();
-    const errors = validateCreateNoteInput(input);
+    const errors = validateForm();
     setFieldErrors(errors);
     setFormError('');
     if (getFirstNoteFieldError(errors)) return;
 
+    const input = buildInput();
     setLoading(true);
     try {
       if (isEdit && noteId) {
@@ -203,6 +223,7 @@ export function NoteFormScreen() {
             values={values}
             fieldErrors={fieldErrors}
             onChange={setValues}
+            pinDisabled={noteStatus === 'archived'}
           />
           {formError ? <ErrorMessage message={formError} /> : null}
           <Button title="Save" onPress={handleSave} loading={loading} />

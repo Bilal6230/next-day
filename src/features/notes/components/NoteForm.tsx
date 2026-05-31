@@ -15,9 +15,15 @@ type NoteFormProps = {
   values: NoteFormValues;
   fieldErrors: NoteFieldErrors;
   onChange: (values: NoteFormValues) => void;
+  pinDisabled?: boolean;
 };
 
-export function NoteForm({ values, fieldErrors, onChange }: NoteFormProps) {
+export function NoteForm({
+  values,
+  fieldErrors,
+  onChange,
+  pinDisabled = false,
+}: NoteFormProps) {
   const update = (patch: Partial<NoteFormValues>) => {
     onChange({ ...values, ...patch });
   };
@@ -55,6 +61,7 @@ export function NoteForm({ values, fieldErrors, onChange }: NoteFormProps) {
         <Switch
           value={values.pinned}
           onValueChange={(pinned) => update({ pinned })}
+          disabled={pinDisabled}
           trackColor={{ false: colors.border, true: colors.primaryMuted }}
           thumbColor={values.pinned ? colors.primary : colors.textMuted}
         />

@@ -48,9 +48,11 @@ export function NoteListItem({ note, onPress, onTogglePin }: NoteListItemProps) 
           </View>
         ) : null}
       </Pressable>
-      <Pressable onPress={onTogglePin} hitSlop={8} style={styles.pinAction}>
-        <Text style={styles.pinText}>{note.pinned ? 'Unpin' : 'Pin'}</Text>
-      </Pressable>
+      {note.status === 'active' ? (
+        <Pressable onPress={onTogglePin} hitSlop={8} style={styles.pinAction}>
+          <Text style={styles.pinText}>{note.pinned ? 'Unpin' : 'Pin'}</Text>
+        </Pressable>
+      ) : null}
     </Card>
   );
 }
