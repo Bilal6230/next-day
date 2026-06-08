@@ -3,18 +3,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '@/app/providers/AuthProvider';
 import { BillsDueSoonCard } from '@/features/today/components/BillsDueSoonCard';
-import { DashboardCard } from '@/features/today/components/DashboardCard';
 import { HabitProgressCard } from '@/features/today/components/HabitProgressCard';
 import { QuickNoteCard } from '@/features/today/components/QuickNoteCard';
 import { TasksDueTodayCard } from '@/features/today/components/TasksDueTodayCard';
+import { TodayFocusCard } from '@/features/today/components/TodayFocusCard';
 import { colors, spacing, typography } from '@/shared/theme';
-
-const FOCUS_SECTION = {
-  title: "Today's Focus",
-  emptyTitle: 'No focus set yet',
-  emptyDescription: 'Set one priority to anchor your day.',
-  accent: colors.primary,
-} as const;
 
 export function TodayScreen() {
   const insets = useSafeAreaInsets();
@@ -36,12 +29,7 @@ export function TodayScreen() {
         ]}
         showsVerticalScrollIndicator={false}
       >
-        <DashboardCard
-          title={FOCUS_SECTION.title}
-          emptyTitle={FOCUS_SECTION.emptyTitle}
-          emptyDescription={FOCUS_SECTION.emptyDescription}
-          accent={FOCUS_SECTION.accent}
-        />
+        <TodayFocusCard />
         <TasksDueTodayCard />
         <BillsDueSoonCard />
         <HabitProgressCard />

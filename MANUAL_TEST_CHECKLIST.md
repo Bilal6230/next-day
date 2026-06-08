@@ -49,8 +49,29 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] **Quick Note** shows loading, pinned/latest active note, or empty state
 - [ ] Quick Note: tap preview opens edit; **Add note** / **Open Notes** navigate to More stack
 - [ ] Archived notes never appear on Quick Note card
-- [ ] Today's Focus placeholder card still shows empty state
+- [ ] **Today's Focus** live card: loading, empty, set, complete, change, clear
 - [ ] Scroll works on smaller screens
+
+## Today Focus
+
+- [ ] Static Today's Focus card replaced with live **TodayFocusCard**
+- [ ] Empty state shows **Set focus** → modal source picker
+- [ ] **Custom focus** — title required; optional note; doc at `users/{uid}/dailyFocus/{dateKey}`
+- [ ] **Task focus** — pending tasks only; stores `sourceId` + title snapshot; `note` null
+- [ ] **Goal focus** — active goals only; stores `sourceId` + title snapshot; `note` null
+- [ ] **Complete** sets `completed: true` and `completedAt`
+- [ ] **Undo complete** clears `completed` and `completedAt`
+- [ ] **Change focus** replaces same-day doc; `completed` resets to false
+- [ ] Replacement preserves original `createdAt`; `updatedAt` updates
+- [ ] **Clear** (with confirmation) deletes today's focus doc
+- [ ] New local date uses new `dateKey` document
+- [ ] Open task/goal link only when linked item still exists
+- [ ] Completing focus does not complete linked task/goal
+- [ ] Friendly Firestore errors (no raw `FirebaseError:` text)
+
+### Today Focus data (MVP)
+
+- [ ] Single-doc subscription per day; no composite indexes
 
 ## Tasks
 
@@ -174,5 +195,5 @@ Use this after configuring `.env` and deploying `firestore.rules`.
 - [ ] No hardcoded user IDs in source
 - [ ] `.env` not tracked by git
 - [ ] App runs after cold start with persisted session (AsyncStorage auth persistence)
-- [ ] Tasks, Money, Notes, and Today dashboard (except Growth) unchanged after Goals MVP
+- [ ] Tasks, Money, Notes, and other Today cards unchanged after Today Focus MVP
 - [ ] Habits still work: mark done, undo, archive, streaks
