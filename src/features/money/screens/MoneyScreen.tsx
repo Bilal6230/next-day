@@ -19,7 +19,6 @@ import { useAuth } from '@/app/providers/AuthProvider';
 import { BillListItem } from '@/features/money/components/BillListItem';
 import { ExpenseListItem } from '@/features/money/components/ExpenseListItem';
 import { MoneySummaryCard } from '@/features/money/components/MoneySummaryCard';
-import { SectionHeader } from '@/features/money/components/SectionHeader';
 import { RECENT_EXPENSES_LIMIT } from '@/features/money/constants';
 import { useBills } from '@/features/money/hooks/useBills';
 import { useExpenses } from '@/features/money/hooks/useExpenses';
@@ -33,7 +32,8 @@ import {
   markBillPaid,
   markBillUnpaid,
 } from '@/firebase/bills';
-import { EmptyState, ErrorMessage } from '@/shared/components';
+import { Button, EmptyState, ErrorMessage, SectionHeader } from '@/shared/components';
+import { useActionLock } from '@/shared/hooks/useActionLock';
 import { getFirestoreErrorMessage } from '@/shared/utils/errors';
 import { colors, spacing, typography } from '@/shared/theme';
 
@@ -55,32 +55,37 @@ export function MoneyScreen() {
     retry: retryExpenses,
   } = useExpenses();
   const [actionError, setActionError] = useState('');
+  const { runLocked } = useActionLock();
 
   const billsDueSoon = useMemo(() => filterBillsDueSoon(bills), [bills]);
   const recentExpenses = expenses.slice(0, RECENT_EXPENSES_LIMIT);
 
-  const handleTogglePaid = async (billId: string, paid: boolean) => {
+  const handleTogglePaid = (billId: string, paid: boolean) => {
     if (!user?.uid) return;
-    setActionError('');
-    try {
-      if (paid) {
-        await markBillUnpaid(user.uid, billId);
-      } else {
-        await markBillPaid(user.uid, billId);
+    runLocked(async () => {
+      setActionError('');
+      try {
+        if (paid) {
+          await markBillUnpaid(user.uid, billId);
+        } else {
+          await markBillPaid(user.uid, billId);
+        }
+      } catch (err) {
+        setActionError(getFirestoreErrorMessage(err));
       }
-    } catch (err) {
-      setActionError(getFirestoreErrorMessage(err));
-    }
+    });
   };
 
-  const handleArchive = async (billId: string) => {
+  const handleArchive = (billId: string) => {
     if (!user?.uid) return;
-    setActionError('');
-    try {
-      await archiveBill(user.uid, billId);
-    } catch (err) {
-      setActionError(getFirestoreErrorMessage(err));
-    }
+    runLocked(async () => {
+      setActionError('');
+      try {
+        await archiveBill(user.uid, billId);
+      } catch (err) {
+        setActionError(getFirestoreErrorMessage(err));
+      }
+    });
   };
 
   return (
@@ -108,9 +113,7 @@ export function MoneyScreen() {
         ) : billsError ? (
           <View style={styles.block}>
             <ErrorMessage message={billsError} />
-            <Text style={styles.link} onPress={retryBills}>
-              Retry
-            </Text>
+            <Button title="Retry" onPress={retryBills} variant="secondary" />
           </View>
         ) : billsDueSoon.length === 0 ? (
           <EmptyState
@@ -143,9 +146,7 @@ export function MoneyScreen() {
         ) : expensesError ? (
           <View style={styles.block}>
             <ErrorMessage message={expensesError} />
-            <Text style={styles.link} onPress={retryExpenses}>
-              Retry
-            </Text>
+            <Button title="Retry" onPress={retryExpenses} variant="secondary" />
           </View>
         ) : recentExpenses.length === 0 ? (
           <EmptyState
@@ -187,10 +188,5 @@ const styles = StyleSheet.create({
   block: {
     gap: spacing.sm,
     marginBottom: spacing.lg,
-  },
-  link: {
-    ...typography.bodySmall,
-    color: colors.primary,
-    fontWeight: '600',
   },
 });

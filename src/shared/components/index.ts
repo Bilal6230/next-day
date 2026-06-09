@@ -5,3 +5,4 @@ export { ErrorMessage } from './ErrorMessage';
 export { Input } from './Input';
 export { LoadingOverlay } from './LoadingOverlay';
 export { Screen } from './Screen';
+export { SectionHeader } from './SectionHeader';

@@ -1,8 +1,5 @@
 import type { Note } from '@/features/notes/types';
-
-function timestampMillis(value: Note['updatedAt'] | Note['createdAt']): number {
-  return value?.toMillis?.() ?? 0;
-}
+import { timestampMillis } from '@/shared/utils/timestamps';
 
 export function sortNotes(notes: Note[]): Note[] {
   return [...notes].sort((a, b) => {

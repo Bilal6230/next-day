@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
-  Pressable,
   ScrollView,
   StyleSheet,
   Text,
@@ -23,7 +22,6 @@ import { useGoals } from '@/features/growth/goals/hooks/useGoals';
 import type { GoalListFilter } from '@/features/growth/goals/types';
 import { HabitListItem } from '@/features/growth/components/HabitListItem';
 import { HabitProgressSummary } from '@/features/growth/components/HabitProgressSummary';
-import { SectionHeader } from '@/features/growth/components/SectionHeader';
 import { useHabitsProgress } from '@/features/growth/hooks/useHabitsProgress';
 import type { GrowthStackParamList } from '@/features/growth/navigation/types';
 import {
@@ -31,7 +29,8 @@ import {
   markHabitDoneToday,
   undoHabitDoneToday,
 } from '@/firebase/habits';
-import { EmptyState, ErrorMessage } from '@/shared/components';
+import { Button, EmptyState, ErrorMessage, SectionHeader } from '@/shared/components';
+import { useActionLock } from '@/shared/hooks/useActionLock';
 import { getFirestoreErrorMessage } from '@/shared/utils/errors';
 import { colors, spacing, typography } from '@/shared/theme';
 
@@ -64,6 +63,7 @@ export function GrowthScreen() {
   const { user } = useAuth();
   const [goalFilter, setGoalFilter] = useState<GoalListFilter>('active');
   const [habitActionError, setHabitActionError] = useState('');
+  const { runLocked } = useActionLock();
 
   const {
     progressRows,
@@ -84,28 +84,32 @@ export function GrowthScreen() {
 
   const goalEmptyCopy = GOAL_EMPTY_COPY[goalFilter];
 
-  const handleToggleDone = async (habitId: string, isDoneToday: boolean) => {
+  const handleToggleDone = (habitId: string, isDoneToday: boolean) => {
     if (!user?.uid) return;
-    setHabitActionError('');
-    try {
-      if (isDoneToday) {
-        await undoHabitDoneToday(user.uid, habitId);
-      } else {
-        await markHabitDoneToday(user.uid, habitId);
+    runLocked(async () => {
+      setHabitActionError('');
+      try {
+        if (isDoneToday) {
+          await undoHabitDoneToday(user.uid, habitId);
+        } else {
+          await markHabitDoneToday(user.uid, habitId);
+        }
+      } catch (err) {
+        setHabitActionError(getFirestoreErrorMessage(err));
       }
-    } catch (err) {
-      setHabitActionError(getFirestoreErrorMessage(err));
-    }
+    });
   };
 
-  const handleArchiveHabit = async (habitId: string) => {
+  const handleArchiveHabit = (habitId: string) => {
     if (!user?.uid) return;
-    setHabitActionError('');
-    try {
-      await archiveHabit(user.uid, habitId);
-    } catch (err) {
-      setHabitActionError(getFirestoreErrorMessage(err));
-    }
+    runLocked(async () => {
+      setHabitActionError('');
+      try {
+        await archiveHabit(user.uid, habitId);
+      } catch (err) {
+        setHabitActionError(getFirestoreErrorMessage(err));
+      }
+    });
   };
 
   return (
@@ -132,9 +136,7 @@ export function GrowthScreen() {
         {habitsError ? (
           <View style={styles.sectionBlock}>
             <ErrorMessage message={habitsError} />
-            <Pressable onPress={retryHabits} hitSlop={8}>
-              <Text style={styles.link}>Retry</Text>
-            </Pressable>
+            <Button title="Retry" onPress={retryHabits} variant="secondary" />
           </View>
         ) : habitsLoading ? (
           <View style={styles.sectionBlock}>
@@ -185,9 +187,7 @@ export function GrowthScreen() {
         {goalsError ? (
           <View style={styles.sectionBlock}>
             <ErrorMessage message={goalsError} />
-            <Pressable onPress={retryGoals} hitSlop={8}>
-              <Text style={styles.link}>Retry</Text>
-            </Pressable>
+            <Button title="Retry" onPress={retryGoals} variant="secondary" />
           </View>
         ) : goalsLoading ? (
           <View style={styles.sectionBlock}>
@@ -241,10 +241,5 @@ const styles = StyleSheet.create({
   loadingText: {
     ...typography.bodySmall,
     color: colors.textMuted,
-  },
-  link: {
-    ...typography.bodySmall,
-    color: colors.primary,
-    fontWeight: '600',
   },
 });

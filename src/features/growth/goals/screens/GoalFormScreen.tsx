@@ -30,6 +30,7 @@ import {
   updateGoal,
 } from '@/firebase/goals';
 import { Button, ErrorMessage, Screen } from '@/shared/components';
+import { useActionLock } from '@/shared/hooks/useActionLock';
 import { getFirestoreErrorMessage } from '@/shared/utils/errors';
 import { colors, spacing, typography } from '@/shared/theme';
 
@@ -59,7 +60,7 @@ export function GoalFormScreen() {
   const [goalStatus, setGoalStatus] = useState<GoalStatus>('active');
   const [fieldErrors, setFieldErrors] = useState<GoalFieldErrors>({});
   const [formError, setFormError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { busy: loading, runLocked } = useActionLock();
   const [loadingGoal, setLoadingGoal] = useState(isEdit);
 
   useEffect(() => {
@@ -106,7 +107,7 @@ export function GoalFormScreen() {
     targetDate: values.targetDate,
   });
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!user?.uid) return;
 
     const errors = validateCreateGoalInput(buildInput());
@@ -114,47 +115,44 @@ export function GoalFormScreen() {
     setFormError('');
     if (getFirstGoalFieldError(errors)) return;
 
-    setLoading(true);
-    try {
-      if (isEdit && goalId) {
-        await updateGoal(user.uid, goalId, buildInput());
-      } else {
-        await createGoal(user.uid, buildInput());
+    runLocked(async () => {
+      try {
+        if (isEdit && goalId) {
+          await updateGoal(user.uid, goalId, buildInput());
+        } else {
+          await createGoal(user.uid, buildInput());
+        }
+        navigation.goBack();
+      } catch (err) {
+        setFormError(getFirestoreErrorMessage(err));
       }
-      navigation.goBack();
-    } catch (err) {
-      setFormError(getFirestoreErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
-  const handleMarkComplete = async () => {
+  const handleMarkComplete = () => {
     if (!user?.uid || !goalId) return;
-    setLoading(true);
-    setFormError('');
-    try {
-      await markGoalCompleted(user.uid, goalId);
-      navigation.goBack();
-    } catch (err) {
-      setFormError(getFirestoreErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
+    runLocked(async () => {
+      setFormError('');
+      try {
+        await markGoalCompleted(user.uid, goalId);
+        navigation.goBack();
+      } catch (err) {
+        setFormError(getFirestoreErrorMessage(err));
+      }
+    });
   };
 
-  const handleMarkActive = async () => {
+  const handleMarkActive = () => {
     if (!user?.uid || !goalId) return;
-    setLoading(true);
-    setFormError('');
-    try {
-      await markGoalActive(user.uid, goalId);
-      navigation.goBack();
-    } catch (err) {
-      setFormError(getFirestoreErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
+    runLocked(async () => {
+      setFormError('');
+      try {
+        await markGoalActive(user.uid, goalId);
+        navigation.goBack();
+      } catch (err) {
+        setFormError(getFirestoreErrorMessage(err));
+      }
+    });
   };
 
   const handleArchive = () => {
@@ -163,17 +161,16 @@ export function GoalFormScreen() {
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Archive',
-        onPress: async () => {
-          setLoading(true);
-          setFormError('');
-          try {
-            await archiveGoal(user.uid, goalId);
-            navigation.goBack();
-          } catch (err) {
-            setFormError(getFirestoreErrorMessage(err));
-          } finally {
-            setLoading(false);
-          }
+        onPress: () => {
+          runLocked(async () => {
+            setFormError('');
+            try {
+              await archiveGoal(user.uid, goalId);
+              navigation.goBack();
+            } catch (err) {
+              setFormError(getFirestoreErrorMessage(err));
+            }
+          });
         },
       },
     ]);

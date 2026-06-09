@@ -33,6 +33,7 @@ import {
   updateNote,
 } from '@/firebase/notes';
 import { Button, ErrorMessage, Screen } from '@/shared/components';
+import { useActionLock } from '@/shared/hooks/useActionLock';
 import { getFirestoreErrorMessage } from '@/shared/utils/errors';
 import { colors, spacing, typography } from '@/shared/theme';
 
@@ -60,7 +61,7 @@ export function NoteFormScreen() {
   const [values, setValues] = useState<NoteFormValues>(DEFAULT_VALUES);
   const [fieldErrors, setFieldErrors] = useState<NoteFieldErrors>({});
   const [formError, setFormError] = useState('');
-  const [loading, setLoading] = useState(false);
+  const { busy: loading, runLocked } = useActionLock();
   const [loadingNote, setLoadingNote] = useState(isEdit);
   const [noteStatus, setNoteStatus] = useState<NoteStatus>('active');
 
@@ -119,7 +120,7 @@ export function NoteFormScreen() {
     });
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!user?.uid) return;
 
     const errors = validateForm();
@@ -128,19 +129,18 @@ export function NoteFormScreen() {
     if (getFirstNoteFieldError(errors)) return;
 
     const input = buildInput();
-    setLoading(true);
-    try {
-      if (isEdit && noteId) {
-        await updateNote(user.uid, noteId, input);
-      } else {
-        await createNote(user.uid, input);
+    runLocked(async () => {
+      try {
+        if (isEdit && noteId) {
+          await updateNote(user.uid, noteId, input);
+        } else {
+          await createNote(user.uid, input);
+        }
+        navigation.goBack();
+      } catch (err) {
+        setFormError(getFirestoreErrorMessage(err));
       }
-      navigation.goBack();
-    } catch (err) {
-      setFormError(getFirestoreErrorMessage(err));
-    } finally {
-      setLoading(false);
-    }
+    });
   };
 
   const handleArchive = () => {
@@ -149,16 +149,15 @@ export function NoteFormScreen() {
       { text: 'Cancel', style: 'cancel' },
       {
         text: 'Archive',
-        onPress: async () => {
-          setLoading(true);
-          try {
-            await archiveNote(user.uid, noteId);
-            navigation.goBack();
-          } catch (err) {
-            setFormError(getFirestoreErrorMessage(err));
-          } finally {
-            setLoading(false);
-          }
+        onPress: () => {
+          runLocked(async () => {
+            try {
+              await archiveNote(user.uid, noteId);
+              navigation.goBack();
+            } catch (err) {
+              setFormError(getFirestoreErrorMessage(err));
+            }
+          });
         },
       },
     ]);
@@ -174,16 +173,15 @@ export function NoteFormScreen() {
         {
           text: 'Delete forever',
           style: 'destructive',
-          onPress: async () => {
-            setLoading(true);
-            try {
-              await deleteNote(user.uid, noteId);
-              navigation.goBack();
-            } catch (err) {
-              setFormError(getFirestoreErrorMessage(err));
-            } finally {
-              setLoading(false);
-            }
+          onPress: () => {
+            runLocked(async () => {
+              try {
+                await deleteNote(user.uid, noteId);
+                navigation.goBack();
+              } catch (err) {
+                setFormError(getFirestoreErrorMessage(err));
+              }
+            });
           },
         },
       ],

@@ -2,6 +2,66 @@
 
 Use this after configuring `.env` and deploying `firestore.rules`.
 
+## Beta Stabilization v1
+
+Cross-cutting checks after stabilization changes (action locks, keyboard, errors, shared UI).
+
+### Session & auth smoke
+
+- [ ] Cold start with saved session lands on main tabs
+- [ ] Sign out from More → login screen; sign in again restores data
+- [ ] Wrong password shows friendly message (not `auth/wrong-password` or raw Firebase text)
+- [ ] Register validation errors are field-level, not raw Firebase codes
+
+### Tab navigation & back stacks
+
+- [ ] All 5 tabs reachable: Today, Tasks, Money, Growth, More
+- [ ] More → Notes → Back → More home
+- [ ] Growth → Add habit / Add goal → Back → Growth home
+- [ ] Tasks / Money form → Back → list
+- [ ] Bottom tabs stay visible when keyboard is open (forms and Focus modal)
+
+### Today card deep links
+
+- [ ] Tasks Due Today → **View all** opens Tasks (Today filter)
+- [ ] Tasks Due Today → **Add task** opens Task form
+- [ ] Bills Due Soon → **Open Money** / **Add bill** navigate correctly
+- [ ] Habit Progress → **Open Growth** / **Add habit** navigate correctly
+- [ ] Quick Note → **Open Notes** / **Add note** / tap preview opens correct note form
+- [ ] Today's Focus → **Open task** / **Open goal** deep links when linked item exists
+
+### Duplicate rapid actions
+
+- [ ] Task: double-tap complete / archive / delete → single state change
+- [ ] Bill: double-tap paid toggle / archive → single change
+- [ ] Habit: double-tap done / undo / archive → single change
+- [ ] Goal form: double-tap Save / Mark complete / Archive → single change
+- [ ] Note list: double-tap pin → single change
+- [ ] Note form: double-tap Save / Archive / Delete → single change
+- [ ] Today Focus: double-tap complete / clear / replace (modal save) → single change
+
+### Keyboard & safe area
+
+- [ ] iOS: Task, Note, Goal, Habit, Bill, Expense forms — Save button tappable above keyboard
+- [ ] Android: same forms — Save tappable; Focus setup modal usable with keyboard open
+- [ ] Today screen scroll clears bottom tab bar on smaller screens
+- [ ] Android: bottom tab labels readable above system navigation
+
+### Offline & friendly errors
+
+- [ ] Airplane mode on a list screen → friendly error + **Retry** restores on reconnect
+- [ ] No UI string contains `FirebaseError`, `permission-denied`, or `auth/` codes
+- [ ] Domain errors show meaningful copy (e.g. pin archived note, goal not found) — not only generic fallback
+
+### Data persistence smoke
+
+- [ ] Create an item → background app → reopen → data still present
+- [ ] CRUD smoke: one create/edit/archive per module still writes under `users/{uid}/...`
+
+### Build
+
+- [ ] `npm run typecheck` passes
+
 ## Environment & launch
 
 - [ ] App shows **Firebase setup required** when `.env` is missing or incomplete

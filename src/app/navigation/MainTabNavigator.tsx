@@ -33,7 +33,7 @@ export function MainTabNavigator() {
         tabBarActiveTintColor: colors.tabActive,
         tabBarInactiveTintColor: colors.tabInactive,
         tabBarShowLabel: true,
-        tabBarHideOnKeyboard: true,
+        tabBarHideOnKeyboard: false,
         tabBarStyle: [
           styles.tabBar,
           {

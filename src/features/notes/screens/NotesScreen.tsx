@@ -25,6 +25,7 @@ import type { MoreStackParamList } from '@/features/more/navigation/types';
 import type { NoteListFilter } from '@/features/notes/types';
 import { setNotePinned } from '@/firebase/notes';
 import { Button, EmptyState, ErrorMessage } from '@/shared/components';
+import { useActionLock } from '@/shared/hooks/useActionLock';
 import { getFirestoreErrorMessage } from '@/shared/utils/errors';
 import { colors, spacing, typography } from '@/shared/theme';
 
@@ -52,18 +53,21 @@ export function NotesScreen() {
   const [filter, setFilter] = useState<NoteListFilter>('active');
   const [search, setSearch] = useState('');
   const [actionError, setActionError] = useState('');
+  const { runLocked } = useActionLock();
 
   const { notes, isLoading, error, retry } = useNotes(filter, search);
   const emptyCopy = EMPTY_COPY[filter];
 
-  const handleTogglePin = async (noteId: string, pinned: boolean) => {
+  const handleTogglePin = (noteId: string, pinned: boolean) => {
     if (!user?.uid) return;
-    setActionError('');
-    try {
-      await setNotePinned(user.uid, noteId, !pinned);
-    } catch (err) {
-      setActionError(getFirestoreErrorMessage(err));
-    }
+    runLocked(async () => {
+      setActionError('');
+      try {
+        await setNotePinned(user.uid, noteId, !pinned);
+      } catch (err) {
+        setActionError(getFirestoreErrorMessage(err));
+      }
+    });
   };
 
   return (

@@ -7,7 +7,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { colors, spacing } from '@/shared/theme';
 
@@ -24,9 +24,16 @@ export function Screen({
   style,
   contentStyle,
 }: ScreenProps) {
+  const insets = useSafeAreaInsets();
+  const bottomPadding = insets.bottom + spacing.xl;
+
   const content = scroll ? (
     <ScrollView
-      contentContainerStyle={[styles.scrollContent, contentStyle]}
+      contentContainerStyle={[
+        styles.scrollContent,
+        { paddingBottom: bottomPadding },
+        contentStyle,
+      ]}
       keyboardShouldPersistTaps="handled"
       showsVerticalScrollIndicator={false}
     >
@@ -40,7 +47,8 @@ export function Screen({
     <SafeAreaView style={[styles.safe, style]}>
       <KeyboardAvoidingView
         style={styles.flex}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
       >
         {content}
       </KeyboardAvoidingView>

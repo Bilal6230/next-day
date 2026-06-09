@@ -1,8 +1,5 @@
 import type { Goal, GoalListFilter } from '@/features/growth/goals/types';
-
-function timestampMillis(value: Goal['updatedAt']): number {
-  return value?.toMillis?.() ?? 0;
-}
+import { timestampMillis } from '@/shared/utils/timestamps';
 
 function sortActiveGoals(goals: Goal[]): Goal[] {
   return [...goals].sort((a, b) => {

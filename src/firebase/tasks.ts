@@ -22,6 +22,8 @@ import type {
   UpdateTaskInput,
 } from '@/features/tasks/types';
 
+import { timestampMillis } from '@/shared/utils/timestamps';
+
 import { getFirebaseDb } from './index';
 
 const USERS_COLLECTION = 'users';
@@ -62,10 +64,6 @@ function mapSnapshotToTasks(
   return snapshot.docs.map((docSnap) =>
     mapTaskDoc(docSnap.id, docSnap.data() as Record<string, unknown>),
   );
-}
-
-function timestampMillis(value: Task['updatedAt']): number {
-  return value?.toMillis?.() ?? 0;
 }
 
 function filterTasks(tasks: Task[], filter: TaskListFilter): Task[] {

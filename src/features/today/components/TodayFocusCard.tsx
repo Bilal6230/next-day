@@ -21,6 +21,7 @@ import { useTodayFocus } from '@/features/today/focus/hooks/useTodayFocus';
 import { getGoal } from '@/firebase/goals';
 import { getTask } from '@/firebase/tasks';
 import { Card, EmptyState, ErrorMessage } from '@/shared/components';
+import { useActionLock } from '@/shared/hooks/useActionLock';
 import { getFirestoreErrorMessage } from '@/shared/utils/errors';
 import { colors, spacing, typography } from '@/shared/theme';
 
@@ -49,7 +50,7 @@ export function TodayFocusCard() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [actionError, setActionError] = useState('');
-  const [actionLoading, setActionLoading] = useState(false);
+  const { busy: actionLoading, runLocked } = useActionLock();
   const [linkedAvailable, setLinkedAvailable] = useState(false);
 
   useEffect(() => {
@@ -80,20 +81,19 @@ export function TodayFocusCard() {
     };
   }, [user?.uid, focus?.sourceId, focus?.sourceType]);
 
-  const handleToggleComplete = async () => {
-    setActionError('');
-    setActionLoading(true);
-    try {
-      if (focus?.completed) {
-        await undoCompleteFocus();
-      } else {
-        await completeFocus();
+  const handleToggleComplete = () => {
+    runLocked(async () => {
+      setActionError('');
+      try {
+        if (focus?.completed) {
+          await undoCompleteFocus();
+        } else {
+          await completeFocus();
+        }
+      } catch (err) {
+        setActionError(getFirestoreErrorMessage(err));
       }
-    } catch (err) {
-      setActionError(getFirestoreErrorMessage(err));
-    } finally {
-      setActionLoading(false);
-    }
+    });
   };
 
   const handleClear = () => {
@@ -105,16 +105,15 @@ export function TodayFocusCard() {
         {
           text: 'Clear',
           style: 'destructive',
-          onPress: async () => {
-            setActionError('');
-            setActionLoading(true);
-            try {
-              await clearFocus();
-            } catch (err) {
-              setActionError(getFirestoreErrorMessage(err));
-            } finally {
-              setActionLoading(false);
-            }
+          onPress: () => {
+            runLocked(async () => {
+              setActionError('');
+              try {
+                await clearFocus();
+              } catch (err) {
+                setActionError(getFirestoreErrorMessage(err));
+              }
+            });
           },
         },
       ],
@@ -238,6 +237,7 @@ export function TodayFocusCard() {
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
         onSave={setFocus}
+        actionsDisabled={actionLoading}
       />
     </>
   );

@@ -1,7 +1,9 @@
 import { useState } from 'react';
 import {
   ActivityIndicator,
+  KeyboardAvoidingView,
   Modal,
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -23,6 +25,7 @@ import {
   type DailyFocusFieldErrors,
 } from '@/features/today/focus/utils/validation';
 import { Button, EmptyState, ErrorMessage, Input } from '@/shared/components';
+import { useActionLock } from '@/shared/hooks/useActionLock';
 import { getFirestoreErrorMessage } from '@/shared/utils/errors';
 import { colors, radius, spacing, typography } from '@/shared/theme';
 
@@ -32,12 +35,14 @@ type FocusSetupModalProps = {
   visible: boolean;
   onClose: () => void;
   onSave: (input: SetDailyFocusInput) => Promise<void>;
+  actionsDisabled?: boolean;
 };
 
 export function FocusSetupModal({
   visible,
   onClose,
   onSave,
+  actionsDisabled = false,
 }: FocusSetupModalProps) {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<BottomTabNavigationProp<MainTabParamList>>();
@@ -46,7 +51,7 @@ export function FocusSetupModal({
   const [customNote, setCustomNote] = useState('');
   const [fieldErrors, setFieldErrors] = useState<DailyFocusFieldErrors>({});
   const [formError, setFormError] = useState('');
-  const [saving, setSaving] = useState(false);
+  const { busy: saving, runLocked } = useActionLock();
 
   const tasksEnabled = visible && step === 'task';
   const goalsEnabled = visible && step === 'goal';
@@ -69,7 +74,6 @@ export function FocusSetupModal({
     setCustomNote('');
     setFieldErrors({});
     setFormError('');
-    setSaving(false);
     onClose();
   };
 
@@ -79,21 +83,22 @@ export function FocusSetupModal({
     setStep('pick');
   };
 
-  const handleSave = async (input: SetDailyFocusInput) => {
+  const handleSave = (input: SetDailyFocusInput) => {
+    if (actionsDisabled || saving) return;
+
     const errors = validateSetDailyFocusInput(input);
     setFieldErrors(errors);
     setFormError('');
     if (getFirstDailyFocusFieldError(errors)) return;
 
-    setSaving(true);
-    try {
-      await onSave(input);
-      resetAndClose();
-    } catch (err) {
-      setFormError(getFirestoreErrorMessage(err));
-    } finally {
-      setSaving(false);
-    }
+    runLocked(async () => {
+      try {
+        await onSave(input);
+        resetAndClose();
+      } catch (err) {
+        setFormError(getFirestoreErrorMessage(err));
+      }
+    });
   };
 
   const handleCustomSave = () => {
@@ -160,11 +165,15 @@ export function FocusSetupModal({
           </Pressable>
         </View>
 
-        <ScrollView
-          contentContainerStyle={styles.scroll}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+        <KeyboardAvoidingView
+          style={styles.flex}
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         >
+          <ScrollView
+            contentContainerStyle={styles.scroll}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+          >
           {formError ? <ErrorMessage message={formError} /> : null}
 
           {step === 'pick' ? (
@@ -211,6 +220,7 @@ export function FocusSetupModal({
                 title="Save focus"
                 onPress={handleCustomSave}
                 loading={saving}
+                disabled={actionsDisabled}
               />
             </View>
           ) : null}
@@ -245,7 +255,7 @@ export function FocusSetupModal({
                     key={task.id}
                     style={styles.optionRow}
                     onPress={() => handleTaskSelect(task.id, task.title)}
-                    disabled={saving}
+                    disabled={saving || actionsDisabled}
                   >
                     <Text style={styles.optionTitle} numberOfLines={2}>
                       {task.title}
@@ -292,7 +302,7 @@ export function FocusSetupModal({
                     key={goal.id}
                     style={styles.optionRow}
                     onPress={() => handleGoalSelect(goal.id, goal.title)}
-                    disabled={saving}
+                    disabled={saving || actionsDisabled}
                   >
                     <Text style={styles.optionTitle} numberOfLines={2}>
                       {goal.title}
@@ -308,7 +318,8 @@ export function FocusSetupModal({
               ) : null}
             </View>
           ) : null}
-        </ScrollView>
+          </ScrollView>
+        </KeyboardAvoidingView>
       </View>
     </Modal>
   );
@@ -318,6 +329,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.background,
+  },
+  flex: {
+    flex: 1,
   },
   header: {
     flexDirection: 'row',

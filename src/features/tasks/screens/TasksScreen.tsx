@@ -31,6 +31,7 @@ import {
   markTaskPending,
 } from '@/firebase/tasks';
 import { Button, EmptyState, ErrorMessage } from '@/shared/components';
+import { useActionLock } from '@/shared/hooks/useActionLock';
 import { getFirestoreErrorMessage } from '@/shared/utils/errors';
 import { colors, spacing, typography } from '@/shared/theme';
 
@@ -70,6 +71,7 @@ export function TasksScreen() {
   const initialFilter = route.params?.filter ?? 'all';
   const [filter, setFilter] = useState<TaskListFilter>(initialFilter);
   const [actionError, setActionError] = useState('');
+  const { runLocked } = useActionLock();
 
   const { tasks, isLoading, error, retry } = useTasks(filter);
 
@@ -79,38 +81,44 @@ export function TasksScreen() {
     }
   }, [route.params?.filter]);
 
-  const handleToggleComplete = async (taskId: string, completed: boolean) => {
+  const handleToggleComplete = (taskId: string, completed: boolean) => {
     if (!user?.uid) return;
-    setActionError('');
-    try {
-      if (completed) {
-        await markTaskPending(user.uid, taskId);
-      } else {
-        await markTaskCompleted(user.uid, taskId);
+    runLocked(async () => {
+      setActionError('');
+      try {
+        if (completed) {
+          await markTaskPending(user.uid, taskId);
+        } else {
+          await markTaskCompleted(user.uid, taskId);
+        }
+      } catch (err) {
+        setActionError(getFirestoreErrorMessage(err));
       }
-    } catch (err) {
-      setActionError(getFirestoreErrorMessage(err));
-    }
+    });
   };
 
-  const handleArchive = async (taskId: string) => {
+  const handleArchive = (taskId: string) => {
     if (!user?.uid) return;
-    setActionError('');
-    try {
-      await archiveTask(user.uid, taskId);
-    } catch (err) {
-      setActionError(getFirestoreErrorMessage(err));
-    }
+    runLocked(async () => {
+      setActionError('');
+      try {
+        await archiveTask(user.uid, taskId);
+      } catch (err) {
+        setActionError(getFirestoreErrorMessage(err));
+      }
+    });
   };
 
-  const handleDelete = async (taskId: string) => {
+  const handleDelete = (taskId: string) => {
     if (!user?.uid) return;
-    setActionError('');
-    try {
-      await deleteTask(user.uid, taskId);
-    } catch (err) {
-      setActionError(getFirestoreErrorMessage(err));
-    }
+    runLocked(async () => {
+      setActionError('');
+      try {
+        await deleteTask(user.uid, taskId);
+      } catch (err) {
+        setActionError(getFirestoreErrorMessage(err));
+      }
+    });
   };
 
   const emptyCopy = EMPTY_COPY[filter];

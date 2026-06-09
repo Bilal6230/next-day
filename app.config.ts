@@ -24,6 +24,7 @@ const config: ExpoConfig = {
     },
     package: 'com.nextday.app',
     edgeToEdgeEnabled: true,
+    softwareKeyboardLayoutMode: 'resize',
   },
   web: {
     favicon: './assets/favicon.png',
