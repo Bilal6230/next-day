@@ -6,6 +6,7 @@ import { StyleSheet, View } from 'react-native';
 
 import { RootNavigator } from '@/app/navigation/RootNavigator';
 import { AuthProvider, useAuth } from '@/app/providers/AuthProvider';
+import { useRemindersSync } from '@/features/reminders/hooks/useRemindersSync';
 import { LoadingOverlay } from '@/shared/components';
 import { colors } from '@/shared/theme';
 
@@ -27,6 +28,8 @@ const navigationTheme = {
 function AppContent() {
   const { isInitialized, isLoading } = useAuth();
   const [appReady, setAppReady] = useState(false);
+
+  useRemindersSync();
 
   useEffect(() => {
     if (isInitialized && !isLoading) {

@@ -29,7 +29,15 @@ const config: ExpoConfig = {
   web: {
     favicon: './assets/favicon.png',
   },
-  plugins: ['@react-native-community/datetimepicker'],
+  plugins: [
+    '@react-native-community/datetimepicker',
+    [
+      'expo-notifications',
+      {
+        defaultChannel: 'next-day-reminders',
+      },
+    ],
+  ],
   extra: {
     firebaseApiKey: process.env.EXPO_PUBLIC_FIREBASE_API_KEY,
     firebaseAuthDomain: process.env.EXPO_PUBLIC_FIREBASE_AUTH_DOMAIN,

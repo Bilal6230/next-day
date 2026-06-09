@@ -50,10 +50,19 @@ export function MoreScreen() {
         </Text>
 
         <Pressable onPress={() => navigation.navigate('NotesList')}>
-          <Card style={styles.notesCard}>
-            <Text style={styles.notesTitle}>Notes</Text>
-            <Text style={styles.notesSubtitle}>
+          <Card style={styles.menuCard}>
+            <Text style={styles.menuTitle}>Notes</Text>
+            <Text style={styles.menuSubtitle}>
               Capture thoughts, pin important notes, and search locally.
+            </Text>
+          </Card>
+        </Pressable>
+
+        <Pressable onPress={() => navigation.navigate('RemindersSettings')}>
+          <Card style={styles.menuCard}>
+            <Text style={styles.menuTitle}>Reminders</Text>
+            <Text style={styles.menuSubtitle}>
+              Local daily nudges for focus, habits, tasks, and bills.
             </Text>
           </Card>
         </Pressable>
@@ -82,14 +91,14 @@ const styles = StyleSheet.create({
     ...typography.body,
     color: colors.textSecondary,
   },
-  notesCard: {
+  menuCard: {
     marginVertical: spacing.sm,
   },
-  notesTitle: {
+  menuTitle: {
     ...typography.heading,
     marginBottom: spacing.xs,
   },
-  notesSubtitle: {
+  menuSubtitle: {
     ...typography.bodySmall,
     color: colors.textMuted,
   },
