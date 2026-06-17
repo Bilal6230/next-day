@@ -20,7 +20,7 @@ import {
 import { useTodayFocus } from '@/features/today/focus/hooks/useTodayFocus';
 import { getGoal } from '@/firebase/goals';
 import { getTask } from '@/firebase/tasks';
-import { Card, EmptyState, ErrorMessage } from '@/shared/components';
+import { Card, Button, EmptyState, ErrorMessage } from '@/shared/components';
 import { useActionLock } from '@/shared/hooks/useActionLock';
 import { getFirestoreErrorMessage } from '@/shared/utils/errors';
 import { colors, spacing, typography } from '@/shared/theme';
@@ -158,9 +158,7 @@ export function TodayFocusCard() {
         ) : error ? (
           <View style={styles.block}>
             <ErrorMessage message={error} />
-            <Pressable onPress={retry} hitSlop={8}>
-              <Text style={styles.action}>Retry</Text>
-            </Pressable>
+            <Button title="Retry" onPress={retry} variant="secondary" />
           </View>
         ) : !focus ? (
           <View style={styles.block}>

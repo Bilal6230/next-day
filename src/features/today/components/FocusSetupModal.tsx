@@ -230,9 +230,7 @@ export function FocusSetupModal({
               {tasksError ? (
                 <View style={styles.listState}>
                   <ErrorMessage message={tasksError} />
-                  <Pressable onPress={retryTasks} hitSlop={8}>
-                    <Text style={styles.link}>Retry</Text>
-                  </Pressable>
+                  <Button title="Retry" onPress={retryTasks} variant="secondary" />
                 </View>
               ) : tasksLoading ? (
                 <View style={styles.listState}>
@@ -277,9 +275,7 @@ export function FocusSetupModal({
               {goalsError ? (
                 <View style={styles.listState}>
                   <ErrorMessage message={goalsError} />
-                  <Pressable onPress={retryGoals} hitSlop={8}>
-                    <Text style={styles.link}>Retry</Text>
-                  </Pressable>
+                  <Button title="Retry" onPress={retryGoals} variant="secondary" />
                 </View>
               ) : goalsLoading ? (
                 <View style={styles.listState}>
