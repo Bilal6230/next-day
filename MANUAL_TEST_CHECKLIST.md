@@ -62,6 +62,44 @@ Cross-cutting checks after stabilization changes (action locks, keyboard, errors
 
 - [ ] `npm run typecheck` passes
 
+## Reminders MVP
+
+### Setup & permissions
+
+- [ ] App launch does **not** request notification permission
+- [ ] More → **Reminders** opens settings screen
+- [ ] More → **Notes** still works
+- [ ] Toggling master **Enable reminders** ON requests permission (iOS + Android)
+- [ ] Denying permission shows friendly message; master stays off
+- [ ] Granting permission allows save
+
+### Settings persistence
+
+- [ ] Doc created at `users/{uid}/settings/reminders` on first save
+- [ ] Master enable/disable persists after reload
+- [ ] Category toggles and times persist
+- [ ] Enabling a category without a time uses default (Focus 08:00, Habits 08:30, Tasks 09:00, Bills 19:00)
+- [ ] Category enabled without time when master on → validation error on save
+- [ ] Invalid HH:mm shows validation error
+
+### Scheduling behavior
+
+- [ ] Today Focus schedules only when focus is missing or incomplete
+- [ ] Completing today’s focus suppresses Today Focus notification after sync
+- [ ] Habits schedule only when active habits exist and not all are done today
+- [ ] Tasks schedule only when pending tasks are due today or overdue
+- [ ] Bills schedule only when unpaid bills are due soon or overdue
+- [ ] Changing a category time reschedules (no duplicate at old time)
+- [ ] Disabling a category cancels that notification
+- [ ] Disabling master cancels all four category notifications
+- [ ] Sign out cancels scheduled reminders for that user
+
+### Regression
+
+- [ ] Sign out from More still works
+- [ ] Friendly Firestore errors (no raw `FirebaseError:` text)
+- [ ] `npm run typecheck` passes
+
 ## Environment & launch
 
 - [ ] App shows **Firebase setup required** when `.env` is missing or incomplete
