@@ -1,6 +1,105 @@
 # Next Day — Manual test checklist
 
-Use this after configuring `.env` and deploying `firestore.rules`.
+Use this for **Internal Beta v1** sign-off. Configure `.env` locally and deploy `firestore.rules` before testing.
+
+See also [BETA_RELEASE.md](./BETA_RELEASE.md) for install, EAS build, and release steps.
+
+---
+
+## Internal Beta v1 Checklist
+
+Primary sign-off checklist for internal beta. Complete all sections before distributing a preview APK.
+
+### 1. Pre-flight
+
+- [ ] `npm install` succeeds
+- [ ] `npm run typecheck` passes
+- [ ] `npx expo start -c` starts Metro
+- [ ] `.env` exists locally (not committed)
+- [ ] App launches without Firebase config error when `.env` is valid
+- [ ] App shows **Firebase setup required** when `.env` is missing or incomplete
+
+### 2. Device matrix
+
+| Environment | Required |
+|-------------|----------|
+| Android physical device | **Yes** — reminders, keyboard, edge-to-edge |
+| Android emulator | **Yes** — smoke CRUD + navigation |
+| iOS Simulator | If available — layout + navigation |
+| iOS physical device | Later — before wider beta / TestFlight |
+
+### 3. Auth
+
+- [ ] Register — validation for empty/invalid email, short password, mismatched passwords
+- [ ] Register — successful signup opens main tabs; `users/{uid}` doc created
+- [ ] Login — validation for empty fields
+- [ ] Login — wrong password shows friendly error (not raw Firebase code)
+- [ ] Login — correct credentials open main app
+- [ ] Forgot password — invalid email validation; success message on submit
+- [ ] Session persists after app restart (cold start lands on main tabs when signed in)
+- [ ] Sign out from More → returns to login
+
+### 4. Navigation
+
+- [ ] All 5 tabs reachable: Today, Tasks, Money, Growth, More
+- [ ] More → Notes → Back → More home
+- [ ] More → Reminders → Back → More home
+- [ ] Growth → Add habit / Add goal → Back → Growth home
+- [ ] Tasks form → Back → task list
+- [ ] Money bill/expense forms → Back → Money home
+- [ ] Today card deep links open correct tab/screen (tasks, money, growth, notes, focus)
+
+### 5. Core CRUD smoke
+
+- [ ] **Task** — create, edit, complete, archive, delete permanently
+- [ ] **Bill** — create, edit, mark paid/unpaid, archive
+- [ ] **Expense** — create, edit, delete
+- [ ] **Habit** — create, edit, mark done today, undo, archive
+- [ ] **Goal** — create, edit, mark complete, mark active, archive
+- [ ] **Note** — create, edit, pin/unpin, archive, delete permanently
+- [ ] **Today Focus** — set (custom/task/goal), complete, change, clear
+
+### 6. Reminders
+
+- [ ] App launch does **not** request notification permission
+- [ ] More → Reminders opens settings
+- [ ] Master ON requests permission
+- [ ] Denied permission shows friendly message; master stays off
+- [ ] Granted permission allows save
+- [ ] Settings persist at `users/{uid}/settings/reminders`
+- [ ] Set category time 1–2 minutes ahead → local notification fires (physical Android)
+- [ ] Disable category cancels that notification
+- [ ] Disable master cancels all four category notifications
+- [ ] Sign out cancels scheduled reminders
+
+### 7. Stabilization
+
+- [ ] Double-tap list actions (task/bill/habit/note pin) → single state change
+- [ ] Double-tap form saves / focus actions → single effect
+- [ ] Keyboard does not hide Save buttons on forms
+- [ ] Bottom tabs remain visible when keyboard is open
+- [ ] Friendly errors only — no raw `FirebaseError`, `auth/`, or `permission-denied` in UI
+
+### 8. Offline
+
+- [ ] Airplane mode on a list screen → friendly error + Retry
+- [ ] Reconnect → data loads; Retry works
+
+### 9. Persistence
+
+- [ ] Create data → background app → reopen → data still present
+- [ ] Data writes under `users/{uid}/...` in Firestore Console
+
+### 10. Build
+
+- [ ] `npm run typecheck` passes
+- [ ] `eas build --profile preview --platform android` succeeds (when distributing APK)
+
+---
+
+## Appendix — Detailed feature checklists
+
+Legacy per-feature checks below. Use for deep regression after the Internal Beta v1 pass above.
 
 ## Beta Stabilization v1
 
