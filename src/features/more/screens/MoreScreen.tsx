@@ -49,6 +49,15 @@ export function MoreScreen() {
           Signed in as {user?.email ?? 'your account'}
         </Text>
 
+        <Pressable onPress={() => navigation.navigate('Deen', { screen: 'DeenHome' })}>
+          <Card style={styles.menuCard}>
+            <Text style={styles.menuTitle}>Deen</Text>
+            <Text style={styles.menuSubtitle}>
+              Daily dhikr, custom zikrs, and spiritual progress.
+            </Text>
+          </Card>
+        </Pressable>
+
         <Pressable onPress={() => navigation.navigate('NotesList')}>
           <Card style={styles.menuCard}>
             <Text style={styles.menuTitle}>Notes</Text>

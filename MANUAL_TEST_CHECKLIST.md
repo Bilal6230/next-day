@@ -44,6 +44,7 @@ Primary sign-off checklist for internal beta. Complete all sections before distr
 - [ ] All 5 tabs reachable: Today, Tasks, Money, Growth, More
 - [ ] More → Notes → Back → More home
 - [ ] More → Reminders → Back → More home
+- [ ] More → Deen → Back → More home
 - [ ] Growth → Add habit / Add goal → Back → Growth home
 - [ ] Tasks form → Back → task list
 - [ ] Money bill/expense forms → Back → Money home
@@ -380,6 +381,35 @@ Cross-cutting checks after stabilization changes (action locks, keyboard, errors
 ### Goals data (MVP)
 
 - [ ] Goals load without composite indexes (collection snapshot + client filter/sort)
+
+## Deen / Dhikr MVP
+
+- [ ] More → Deen opens dhikr dashboard
+- [ ] More → Notes still works
+- [ ] More → Reminders still works
+- [ ] Sign out still works
+- [ ] Six predefined dhikrs visible under Common Dhikrs
+- [ ] Add custom dhikr
+- [ ] Edit custom dhikr
+- [ ] Archive custom dhikr (with confirmation)
+- [ ] Archived custom dhikr disappears from active list
+- [ ] Tap predefined dhikr opens counter
+- [ ] Tap custom dhikr opens counter
+- [ ] +1 increments count instantly
+- [ ] Undo decrements and count does not go below 0
+- [ ] Target reached shows completed badge
+- [ ] Reset today clears count and completed state (with confirmation)
+- [ ] Custom doc at `users/{uid}/dhikrs/{dhikrId}`
+- [ ] Progress doc at `users/{uid}/dhikrProgress/{dateKey}/items/{dhikrId}`
+- [ ] App restart preserves today’s counts
+- [ ] New local date starts fresh progress
+- [ ] Friendly errors only (no raw `FirebaseError:` text)
+- [ ] `npm run typecheck` passes
+
+### Deen data (MVP)
+
+- [ ] Predefined dhikrs are local constants only (not written to Firestore)
+- [ ] Dhikrs and progress load without composite indexes
 
 ## Security (Firebase Console)
 

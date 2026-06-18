@@ -1,5 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 
+import { DeenNavigator } from '@/features/deen/navigation/DeenNavigator';
 import type { MoreStackParamList } from '@/features/more/navigation/types';
 import { MoreScreen } from '@/features/more/screens/MoreScreen';
 import { RemindersScreen } from '@/features/reminders/screens/RemindersScreen';
@@ -19,6 +20,7 @@ export function MoreNavigator() {
       }}
     >
       <Stack.Screen name="MoreHome" component={MoreScreen} />
+      <Stack.Screen name="Deen" component={DeenNavigator} />
       <Stack.Screen name="RemindersSettings" component={RemindersScreen} />
       <Stack.Screen name="NotesList" component={NotesScreen} />
       <Stack.Screen name="NoteForm" component={NoteFormScreen} />
