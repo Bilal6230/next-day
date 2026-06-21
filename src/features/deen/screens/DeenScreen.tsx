@@ -12,12 +12,14 @@ import {
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useAuth } from '@/app/providers/AuthProvider';
+import { useAzkarDashboard } from '@/features/deen/azkar/hooks/useAzkarDashboard';
 import { DhikrListItem } from '@/features/deen/components/DhikrListItem';
 import { DhikrSummaryCard } from '@/features/deen/components/DhikrSummaryCard';
 import { useDhikrDashboard } from '@/features/deen/hooks/useDhikrDashboard';
 import type { DeenStackParamList } from '@/features/deen/navigation/types';
 import {
   Button,
+  Card,
   EmptyState,
   ErrorMessage,
   SectionHeader,
@@ -40,6 +42,13 @@ export function DeenScreen() {
     retry,
   } = useDhikrDashboard(user?.uid);
 
+  const {
+    morningSummary,
+    eveningSummary,
+    isLoading: azkarLoading,
+    error: azkarError,
+  } = useAzkarDashboard(user?.uid);
+
   const openCounter = (dhikrId: string, sourceType: 'default' | 'custom') => {
     navigation.navigate('DhikrCounter', { dhikrId, sourceType });
   };
@@ -50,6 +59,10 @@ export function DeenScreen() {
 
   const openEditForm = (dhikrId: string) => {
     navigation.navigate('DhikrForm', { dhikrId });
+  };
+
+  const openAzkar = () => {
+    navigation.navigate('AzkarHome');
   };
 
   return (
@@ -79,6 +92,26 @@ export function DeenScreen() {
           ]}
           showsVerticalScrollIndicator={false}
         >
+          <Card style={styles.azkarCard}>
+            <Text style={styles.azkarTitle}>Morning & Evening Azkar</Text>
+            <Text style={styles.azkarSubtitle}>
+              Complete your daily azkar checklist.
+            </Text>
+            {!azkarLoading && !azkarError ? (
+              <Text style={styles.azkarProgress}>
+                Morning {morningSummary.completedCount}/{morningSummary.totalCount}
+                {' · '}
+                Evening {eveningSummary.completedCount}/{eveningSummary.totalCount}
+              </Text>
+            ) : null}
+            <Button
+              title="Open Azkar"
+              variant="secondary"
+              onPress={openAzkar}
+              style={styles.azkarButton}
+            />
+          </Card>
+
           <DhikrSummaryCard
             completedCount={summary.completedCount}
             totalCount={summary.totalCount}
@@ -157,5 +190,23 @@ const styles = StyleSheet.create({
   emptyBlock: {
     gap: spacing.md,
     marginBottom: spacing.lg,
+  },
+  azkarCard: {
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
+  },
+  azkarTitle: {
+    ...typography.heading,
+  },
+  azkarSubtitle: {
+    ...typography.bodySmall,
+    color: colors.textMuted,
+  },
+  azkarProgress: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+  },
+  azkarButton: {
+    marginTop: spacing.sm,
   },
 });

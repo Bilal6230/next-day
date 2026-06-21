@@ -45,6 +45,7 @@ Primary sign-off checklist for internal beta. Complete all sections before distr
 - [ ] More → Notes → Back → More home
 - [ ] More → Reminders → Back → More home
 - [ ] More → Deen → Back → More home
+- [ ] More → Deen → Azkar → Back → Deen home
 - [ ] Growth → Add habit / Add goal → Back → Growth home
 - [ ] Tasks form → Back → task list
 - [ ] Money bill/expense forms → Back → Money home
@@ -410,6 +411,38 @@ Cross-cutting checks after stabilization changes (action locks, keyboard, errors
 
 - [ ] Predefined dhikrs are local constants only (not written to Firestore)
 - [ ] Dhikrs and progress load without composite indexes
+
+## Morning / Evening Azkar MVP
+
+- [ ] More → Deen opens
+- [ ] Deen shows Morning & Evening Azkar card with live Morning X/Y · Evening X/Y
+- [ ] Deen → Open Azkar opens azkar checklist
+- [ ] Morning starter azkar visible (5 items)
+- [ ] Evening starter azkar visible (5 items)
+- [ ] Mark morning item done
+- [ ] Undo morning item
+- [ ] Mark evening item done
+- [ ] Summary shows Morning X/Y and Evening X/Y
+- [ ] Add custom morning azkar
+- [ ] Add custom evening azkar
+- [ ] Edit custom azkar
+- [ ] Archive custom azkar (confirmation)
+- [ ] Archived item disappears from active list
+- [ ] Progress stored at `users/{uid}/azkarProgress/{dateKey}/items/{azkarItemId}`
+- [ ] Custom item stored at `users/{uid}/azkarItems/{azkarItemId}`
+- [ ] App restart preserves today’s azkar progress
+- [ ] New local date starts fresh progress
+- [ ] Existing Dhikr feature still works end-to-end
+- [ ] More → Notes still works
+- [ ] More → Reminders still works
+- [ ] Sign out still works
+- [ ] Friendly errors only (no raw `FirebaseError:` text)
+- [ ] `npm run typecheck` passes
+
+### Azkar data (MVP)
+
+- [ ] Predefined starter azkar are local constants only (not written to Firestore)
+- [ ] Azkar items and progress load without composite indexes
 
 ## Security (Firebase Console)
 

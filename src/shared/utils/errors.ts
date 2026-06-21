@@ -31,9 +31,11 @@ const DEFAULT_FIRESTORE_MESSAGE = 'Something went wrong. Please try again.';
 
 const SAFE_DOMAIN_ERROR_MESSAGES = new Set([
   'Archived goals cannot be reopened',
+  'Azkar not found',
   'Bill not found',
   'Cannot complete an archived goal',
   'Cannot pin an archived note',
+  'Cannot update an archived azkar',
   'Cannot update an archived dhikr',
   'Count cannot be negative',
   'Custom focus cannot have a source ID',
@@ -43,6 +45,8 @@ const SAFE_DOMAIN_ERROR_MESSAGES = new Set([
   'Enter a valid amount greater than zero',
   'Goal not found',
   'Habit not found',
+  'Invalid azkar',
+  'Invalid azkar routine',
   'Invalid bill',
   'Invalid dhikr',
   'Invalid expense',
