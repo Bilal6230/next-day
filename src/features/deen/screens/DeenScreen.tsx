@@ -13,6 +13,7 @@ import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { useAuth } from '@/app/providers/AuthProvider';
 import { useAzkarDashboard } from '@/features/deen/azkar/hooks/useAzkarDashboard';
+import { useTodayPrayerLog } from '@/features/deen/prayer/hooks/useTodayPrayerLog';
 import { DhikrListItem } from '@/features/deen/components/DhikrListItem';
 import { DhikrSummaryCard } from '@/features/deen/components/DhikrSummaryCard';
 import { useDhikrDashboard } from '@/features/deen/hooks/useDhikrDashboard';
@@ -49,6 +50,12 @@ export function DeenScreen() {
     error: azkarError,
   } = useAzkarDashboard(user?.uid);
 
+  const {
+    summary: prayerSummary,
+    isLoading: prayerLoading,
+    error: prayerError,
+  } = useTodayPrayerLog(user?.uid);
+
   const openCounter = (dhikrId: string, sourceType: 'default' | 'custom') => {
     navigation.navigate('DhikrCounter', { dhikrId, sourceType });
   };
@@ -63,6 +70,10 @@ export function DeenScreen() {
 
   const openAzkar = () => {
     navigation.navigate('AzkarHome');
+  };
+
+  const openPrayerTracker = () => {
+    navigation.navigate('PrayerTracker');
   };
 
   return (
@@ -109,6 +120,26 @@ export function DeenScreen() {
               variant="secondary"
               onPress={openAzkar}
               style={styles.azkarButton}
+            />
+          </Card>
+
+          <Card style={styles.prayerCard}>
+            <Text style={styles.prayerTitle}>Prayer Tracker</Text>
+            <Text style={styles.prayerSubtitle}>
+              Track today’s five daily prayers.
+            </Text>
+            {!prayerLoading && !prayerError ? (
+              <Text style={styles.prayerProgress}>
+                Completed {prayerSummary.completedCount}/{prayerSummary.totalCount}
+                {' · '}
+                Missed {prayerSummary.missedCount}
+              </Text>
+            ) : null}
+            <Button
+              title="Open Prayer Tracker"
+              variant="secondary"
+              onPress={openPrayerTracker}
+              style={styles.prayerButton}
             />
           </Card>
 
@@ -207,6 +238,24 @@ const styles = StyleSheet.create({
     color: colors.textSecondary,
   },
   azkarButton: {
+    marginTop: spacing.sm,
+  },
+  prayerCard: {
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
+  },
+  prayerTitle: {
+    ...typography.heading,
+  },
+  prayerSubtitle: {
+    ...typography.bodySmall,
+    color: colors.textMuted,
+  },
+  prayerProgress: {
+    ...typography.bodySmall,
+    color: colors.textSecondary,
+  },
+  prayerButton: {
     marginTop: spacing.sm,
   },
 });

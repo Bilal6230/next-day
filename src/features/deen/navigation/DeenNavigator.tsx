@@ -3,6 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import type { DeenStackParamList } from '@/features/deen/navigation/types';
 import { AzkarFormScreen } from '@/features/deen/azkar/screens/AzkarFormScreen';
 import { AzkarScreen } from '@/features/deen/azkar/screens/AzkarScreen';
+import { PrayerTrackerScreen } from '@/features/deen/prayer/screens/PrayerTrackerScreen';
 import { DeenScreen } from '@/features/deen/screens/DeenScreen';
 import { DhikrCounterScreen } from '@/features/deen/screens/DhikrCounterScreen';
 import { DhikrFormScreen } from '@/features/deen/screens/DhikrFormScreen';
@@ -22,6 +23,7 @@ export function DeenNavigator() {
       <Stack.Screen name="DeenHome" component={DeenScreen} />
       <Stack.Screen name="AzkarHome" component={AzkarScreen} />
       <Stack.Screen name="AzkarForm" component={AzkarFormScreen} />
+      <Stack.Screen name="PrayerTracker" component={PrayerTrackerScreen} />
       <Stack.Screen name="DhikrCounter" component={DhikrCounterScreen} />
       <Stack.Screen name="DhikrForm" component={DhikrFormScreen} />
     </Stack.Navigator>

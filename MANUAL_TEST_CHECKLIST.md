@@ -46,6 +46,7 @@ Primary sign-off checklist for internal beta. Complete all sections before distr
 - [ ] More → Reminders → Back → More home
 - [ ] More → Deen → Back → More home
 - [ ] More → Deen → Azkar → Back → Deen home
+- [ ] More → Deen → Prayer Tracker → Back → Deen home
 - [ ] Growth → Add habit / Add goal → Back → Growth home
 - [ ] Tasks form → Back → task list
 - [ ] Money bill/expense forms → Back → Money home
@@ -443,6 +444,35 @@ Cross-cutting checks after stabilization changes (action locks, keyboard, errors
 
 - [ ] Predefined starter azkar are local constants only (not written to Firestore)
 - [ ] Azkar items and progress load without composite indexes
+
+## Prayer Tracker MVP
+
+- [ ] More → Deen opens
+- [ ] Deen shows Prayer Tracker card with Completed X/5 · Missed Y
+- [ ] Deen → Open Prayer Tracker opens prayer screen
+- [ ] Five prayers visible: Fajr, Dhuhr, Asr, Maghrib, Isha
+- [ ] Default statuses are Pending when no log exists
+- [ ] Set Fajr to On time
+- [ ] Set Dhuhr to Jamaah
+- [ ] Set Asr to Late
+- [ ] Set Maghrib to Qadha
+- [ ] Set Isha to Missed
+- [ ] Summary updates Completed X/5, Pending Y, Missed Z
+- [ ] Reset one prayer to Pending
+- [ ] Firestore doc exists at `users/{uid}/prayerLogs/{dateKey}`
+- [ ] App restart preserves today’s prayer statuses
+- [ ] New local date starts fresh progress
+- [ ] Existing Dhikr still works end-to-end
+- [ ] Existing Azkar still works end-to-end
+- [ ] More → Notes still works
+- [ ] More → Reminders still works
+- [ ] Sign out still works
+- [ ] Friendly errors only (no raw `FirebaseError:` text)
+- [ ] `npm run typecheck` passes
+
+### Prayer data (MVP)
+
+- [ ] One prayer log doc per local dateKey (no composite indexes)
 
 ## Security (Firebase Console)
 

@@ -4,4 +4,5 @@ export type DeenStackParamList = {
   DhikrForm: { dhikrId?: string };
   AzkarHome: undefined;
   AzkarForm: { azkarItemId?: string; routine: 'morning' | 'evening' };
+  PrayerTracker: undefined;
 };
